@@ -1,7 +1,7 @@
 //============================================================================
 // Name        : Trabalho1CG.cpp
 // Author      : Jackson Henrique Hochscheidt
-//			   : Kevin Spiller
+//			   		 : Kevin Mitchell Spiller
 // Version     :
 // Copyright   : Your copyright notice
 // Description : Hello World in C++, Ansi-style
@@ -15,13 +15,13 @@
 #define hMaze 7
 
 double labirinto[hMaze][wMaze] ={
-		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-		{0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0},
-		{0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0},
-		{0,0,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,1,1,0,0,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,1,1,0,0},
-		{0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0},
-		{0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0},
-		{0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0},
+		{0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0},
+		{0,0,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,1,1,0,0,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,1,1,0},
+		{0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0},
+		{0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0},
+		{0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0},
 
 };
 //
@@ -44,6 +44,11 @@ double labirinto[hMaze][wMaze] ={
 //		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0},
 //};
 
+int windowWidth  = 700;
+int windowHeight = 700;
+int windowPosX   = 0;
+int windowPosY   = 0;
+bool fullScreenMode = true;
 #define X 0
 #define Y 1
 #define Z 2
@@ -59,6 +64,24 @@ double rotateTEAPOT = 0;
 //posicao inicial da camera -- vetor[3] = [x,y,z]
 double camera[3] = {0,50,5};
 
+//Função para tela cheia
+void specialKeys(int key, int x, int y) {
+   switch (key) {
+      case GLUT_KEY_F1:    // F1: Para trocar entre tela cheia e janela
+         fullScreenMode = !fullScreenMode;         // Estado de troca
+         if (fullScreenMode) {                     // Modo tela cheia
+            windowPosX   = glutGet(GLUT_WINDOW_X); // Salva os parametros para retornar mais tarde
+            windowPosY   = glutGet(GLUT_WINDOW_Y);
+            windowWidth  = glutGet(GLUT_WINDOW_WIDTH);
+            windowHeight = glutGet(GLUT_WINDOW_HEIGHT);
+            glutFullScreen();                      // Muda para tela cheia
+         } else {                                         // Modo janela
+            glutReshapeWindow(windowWidth, windowHeight); // Troca para modo janela
+            glutPositionWindow(windowPosX, windowPosX);   // Posição do topo canto esquerdo
+         }
+         break;
+   }
+}
 
 #include <GL/glut.h>
 #include <stdio.h>
@@ -85,8 +108,8 @@ int main(int argc, char **argv) {
 
 
 	//cria JANELA DE VISUALIZACAO
-	glutInitWindowPosition(0,0);
-	glutInitWindowSize(700,700);
+	glutInitWindowPosition(windowPosX,windowPosY);
+	glutInitWindowSize(windowWidth,windowHeight);
 	glutCreateWindow("Labirinto 3D");
 
 	//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$//
@@ -102,7 +125,10 @@ int main(int argc, char **argv) {
 	//FUNCOES DE CALLBACK
 	glutReshapeFunc(reshapeWindow);
 	glutDisplayFunc(draw);
+	glutSpecialFunc(specialKeys);
+	glutFullScreen();
 	glutKeyboardFunc(teclado);
+
 
 	glutMainLoop();
 }
