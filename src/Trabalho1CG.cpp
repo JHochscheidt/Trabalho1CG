@@ -12,7 +12,7 @@
 //Declaracao de variaveis globais e defines
 
 #define wMaze 75
-#define hMaze 41
+#define hMaze 45
 
 //double labirinto[hMaze][wMaze] ={
 //		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -25,8 +25,10 @@
 //
 //};
 //
-double labirinto[hMaze][wMaze]={
+int labirinto[hMaze][wMaze]={
 		//Linha 1
+		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 		//linha 2
 		{0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
@@ -34,7 +36,7 @@ double labirinto[hMaze][wMaze]={
 		{0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
 		//linha 3
 		{0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0},
-		{0,0,0,1,2,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0},
+		{0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0},
 		{0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0},
 		//linha 4
 		{0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
@@ -53,16 +55,18 @@ double labirinto[hMaze][wMaze]={
 		{0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0},
 		{0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0},
 		//linha 8
-		{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-		{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-		{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+		{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
+		//posicao inicial do boneco
+		{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
+		//posicao inicial do boneco
+		{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
 		//linha 9
 		{0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0},
-		{0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0,0,0,1,2,1,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0},
 		{0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0},
 		//linha 10
 		{0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
-		{0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
+		{0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
 		{0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
 		//linha 11
 		{0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0},
@@ -78,11 +82,18 @@ double labirinto[hMaze][wMaze]={
 		{0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0},
 		//linha 14
 		{0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
-		{0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
+		{0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,4,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
 		{0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
 		//linha 15
+		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0},
 		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0}
 };
+
+
+//rotate no X -- muda objeto deitado
+//rotate no Y -- muda objeto pra frente pra tras
+//rotate no Z
 
 int windowWidth  = 700;
 int windowHeight = 700;
@@ -94,34 +105,21 @@ bool fullScreenMode = true;
 #define Z 2
 #define CONE 2
 #define TORUS 3
-#define ALTURA_PAREDE 3
+#define ALTURA_PAREDE 5
 #define TEAPOT 4
 double angPerspective = 45;
 double rotX = 0, rotY = 0, rotZ = 0;
 double rotateTORUS = 0;
 double rotateTEAPOT = 0;
+int posRobo[3] = {22,0,0};
 
+
+#define ROBO 9
 //posicao inicial da camera -- vetor[3] = [x,y,z]
 double camera[3] = {0,100,20};
 
 //Função para tela cheia
-void specialKeys(int key, int x, int y) {
-   switch (key) {
-      case GLUT_KEY_F1:    // F1: Para trocar entre tela cheia e janela
-         fullScreenMode = !fullScreenMode;         // Estado de troca
-         if (fullScreenMode) {                     // Modo tela cheia
-            windowPosX   = glutGet(GLUT_WINDOW_X); // Salva os parametros para retornar mais tarde
-            windowPosY   = glutGet(GLUT_WINDOW_Y);
-            windowWidth  = glutGet(GLUT_WINDOW_WIDTH);
-            windowHeight = glutGet(GLUT_WINDOW_HEIGHT);
-            glutFullScreen();                      // Muda para tela cheia
-         } else {                                         // Modo janela
-            glutReshapeWindow(windowWidth, windowHeight); // Troca para modo janela
-            glutPositionWindow(windowPosX, windowPosX);   // Posição do topo canto esquerdo
-         }
-         break;
-   }
-}
+void specialKeys(int key, int x, int y);
 
 #include <GL/glut.h>
 #include <stdio.h>
@@ -131,6 +129,8 @@ void reshapeWindow(GLsizei w, GLsizei h);
 
 void draw();
 
+void drawRobo();
+
 void drawMaze(double w, double h);
 
 GLUquadricObj *novaQuadrica();
@@ -139,6 +139,11 @@ GLUquadricObj *chao = novaQuadrica();
 
 void teclado(unsigned char key, int x, int y);
 
+//##########################//
+//$$$$$$$$$$$$$$$$$$$$$$$$$$//
+//			MAIN			//
+//$$$$$$$$$$$$$$$$$$$$$$$$$$//
+//##########################//
 int main(int argc, char **argv) {
 
 	//inicializa GLUT com parametros necessarios
@@ -169,6 +174,12 @@ int main(int argc, char **argv) {
 	glutFullScreen();
 	glutKeyboardFunc(teclado);
 
+	for(int i = 0; i < hMaze; i++){
+		for(int j = 0; j < wMaze; j++){
+			printf("%d", labirinto[i][j]);
+		}
+		printf("\n");
+	}
 
 	glutMainLoop();
 }
@@ -199,11 +210,7 @@ void draw(){
 	//CHAO
 
 	glRotatef(-90,1,0,0);
-	glTranslatef(-10,5,0);
 	glRotatef(-90,0,0,1);
-
-
-	glTranslatef(0,0,2.5);
 
 	glBegin(GL_QUADS);
 		glVertex3f(0,0,0);
@@ -212,13 +219,12 @@ void draw(){
 		glVertex3f(0,wMaze,0);
 	glEnd();
 
-	glTranslatef(0,0,ALTURA_PAREDE/2);
-	//glColor3f(1,0,0);
+	glColor3f(1,0,0);
 
 
 	//glutSolidCube(1);
 	drawMaze(wMaze, hMaze);
-
+	drawRobo();
 
 
 	glFlush();
@@ -268,9 +274,54 @@ void teclado(unsigned char key, int x, int y){
 			camera[Y]++;
 
 	}
+	glutPostRedisplay();
+}
+
+//Função para tela cheia
+void specialKeys(int key, int x, int y) {
+	switch (key) {
+		case GLUT_KEY_F1:    // F1: Para trocar entre tela cheia e janela
+			fullScreenMode = !fullScreenMode;         // Estado de troca
+			if (fullScreenMode) {                     // Modo tela cheia
+				windowPosX   = glutGet(GLUT_WINDOW_X); // Salva os parametros para retornar mais tarde
+				windowPosY   = glutGet(GLUT_WINDOW_Y);
+				windowWidth  = glutGet(GLUT_WINDOW_WIDTH);
+				windowHeight = glutGet(GLUT_WINDOW_HEIGHT);
+				glutFullScreen();                      // Muda para tela cheia
+			}else{                                         // Modo janela
+				glutReshapeWindow(windowWidth, windowHeight); // Troca para modo janela
+				glutPositionWindow(windowPosX, windowPosX);   // Posição do topo canto esquerdo
+			}
+			break;
+		case GLUT_KEY_DOWN: //anda pra baixo no mapa
+			if(posRobo[X]+2 <= hMaze)
+				if(labirinto[posRobo[X]+2][posRobo[Y]] == 1)
+					posRobo[X]++;
+			break;
+		case GLUT_KEY_UP: //anda pra cima no mapa
+
+			if(posRobo[X]-2 >=0)
+				if(labirinto[posRobo[X]-2][posRobo[Y]] == 1)
+					posRobo[X]--;
+			break;
+		case GLUT_KEY_LEFT: //anda pra esquerda no mapa
+			printf("pi\n");
+			if(posRobo[Y]-2 >= 0)
+				if(labirinto[posRobo[X]][posRobo[Y]-2] == 1)
+					posRobo[Y]--;
+			break;
+		case GLUT_KEY_RIGHT: //anda pra direita no mapa
+			//se tiver mais duas posicoes pra direita no mapa
+			if(posRobo[Y]+2 < wMaze)
+				if(labirinto[posRobo[X]][posRobo[Y]+2] == 1)
+					posRobo[Y]++;
+			break;
+	}
+	glutPostRedisplay();
 }
 
 void drawMaze( double w, double h){
+	glTranslatef(0,0,1);
 	//para cada linha da matriz do labirinto
 	for(int i = 0; i < h; i++){
 		//para cada coluna da matriz do labirinto
@@ -279,6 +330,7 @@ void drawMaze( double w, double h){
 			if(labirinto[i][j] == 0){
 				//desenhar parede
 				glPushMatrix();
+					glTranslatef(0,0,ALTURA_PAREDE/2);
 					glColor3f(1,0,0);
 					glScalef(1,1,ALTURA_PAREDE);
 					glTranslatef(i,j,0);
@@ -286,18 +338,18 @@ void drawMaze( double w, double h){
 				glPopMatrix();
 			}else if(labirinto[i][j] == CONE){
 				glPushMatrix();
-					glColor3f(0.7,0.6,0.5);
+					glColor3f(1,0.6,0.5);
 					glTranslatef(i,j,0);
-					glutSolidCone(0.5,ALTURA_PAREDE,50,50);
+					glutSolidCube(1);
 				glPopMatrix();
 			}else if(labirinto[i][j] == TORUS){
 				glPushMatrix();
 					glColor3f(1,1,0);
 					glTranslatef(i,j,0);
 					glRotatef(90,0,1,0);
-					glScalef(-0.5,-0.5,-0.5);
+//					glScalef(-0.5,-0.5,-0.5);
 					glRotatef(rotateTORUS++,1,0,0);
-					glutSolidTorus(0.1, 0.7,50,50);
+					glutSolidTorus(0.3, 0.7,50,50);
 				glPopMatrix();
 			}else if(labirinto[i][j] == TEAPOT){
 				glPushMatrix();
@@ -305,12 +357,22 @@ void drawMaze( double w, double h){
 					glTranslatef(i,j,0);
 					glRotatef(90,1,0,0);
 					glRotatef(rotateTEAPOT++,0,1,0);
-					glScalef(1,1,0.5);
+//					glScalef(1,1,0.5);
 //					glRotatef(rotateTORUS++,1,0,0);
-					glutSolidTeapot(0.3);
+					glutSolidTeapot(0.75);
 				glPopMatrix();
 			}
 		}
 	}
+};
 
-}
+void drawRobo(){
+	glPushMatrix();
+		glColor3f(0.2,0.1,0.7);
+		glTranslatef(posRobo[X],posRobo[Y],posRobo[Z]);
+		glRotatef(90,1,0,0);
+		glRotatef(90,0,1,0);
+		glutSolidTeapot(1);
+	glPopMatrix();
+	//glutPostRedisplay();
+};
