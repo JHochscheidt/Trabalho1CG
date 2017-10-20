@@ -1,18 +1,40 @@
-#Para escrever comentários ##
-############################# Makefile ##########################
-#Definimos a variável
-SRC=src/Trabalho1CG.cpp
-all: src/Trabalho1CG
-Trabalho1CG: src/Trabalho1CG.o
-	g++ -o src/Trabalho1CG src/Trabalho1CG.o -lm -lglut -lGL -lGLU
-#-----> Distancia com o botao TAB ### e nao com espaços
-Trabalho1CG.o: src/Trabalho1CG.cpp
-	g++ -o src/Trabalho1CG.o -c src/Trabalho1CG.cpp -lm -lglut -lGL -lGLU -W -Wall -ansi -pedantic
-#
-#Coloquei $(SRC) em todos os lugares aonde estava main.c
-Trabalho1CG.o: $(SRC)
+# Main compiler
+CC := g++
+# diretorio do source
+SRCDIR := src
+# diretorio dos arquivos objeto
+BUILDDIR := build
+#diretorio do executavel
+TARGET := bin/Main
+
+# extensao dos fontes
+SRCEXT := cpp
+# procura todos os fontes
+SOURCES := $(shell find $(SRCDIR) -type f -name *.$(SRCEXT))
+# arquivos objeto
+OBJECTS := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.o))
+#parametros de compilacao
+CFLAGS := -g
+#link para libraries
+LIB := -lglut -lGL -lGLU
+#includes
+INC := -I include
+
+
+$(TARGET): $(OBJECTS)
+	@echo " Linking...";
+	@echo " $(CC) $^ -o $(TARGET) $(LIB)";
+	$(CC) $^ -o $(TARGET) $(LIB)
+
+$(BUILDDIR)/%.o: $(SRCDIR)/%.$(SRCEXT)
+	@mkdir -p $(BUILDDIR)
+	@echo " $(CC) $(CFLAGS) $(INC) -c -o $@ $<";
+	$(CC) $(CFLAGS) $(INC) -c -o $@ $<
+
 
 clean:
-	rm -rf *.o
-mrproper: clean
-	rm -rf src/Trabalho1CG
+	@echo " Cleaning..."; 
+	@echo " $(RM) -r $(BUILDDIR) $(TARGET)";
+	$(RM) -r $(BUILDDIR) $(TARGET)
+
+.PHONY: clean
