@@ -105,18 +105,23 @@ bool fullScreenMode = true;
 #define Z 2
 #define CONE 2
 #define TORUS 3
-#define ALTURA_PAREDE 5
+#define ALTURA_PAREDE 3
 #define TEAPOT 4
+
+double TAM_LEG = 1.5;	 //comprimento das pernas
+double TAM_TRONCO = 1.5; //comprimeiro do tronco do boneco
+double TAM_PESCOCO = 1.5; //comprimento pescoço
 double angPerspective = 45;
 double rotX = 0, rotY = 0, rotZ = 0;
 double rotateTORUS = 0;
 double rotateTEAPOT = 0;
+
 int posRobo[3] = {22,0,0};
 
 
 #define ROBO 9
 //posicao inicial da camera -- vetor[3] = [x,y,z]
-double camera[3] = {0,100,20};
+double camera[3] = {0,75,75};
 
 //Função para tela cheia
 void specialKeys(int key, int x, int y);
@@ -133,9 +138,12 @@ void drawRobo();
 
 void drawMaze(double w, double h);
 
+void drawRobot();
+void drawLegs();
+
 GLUquadricObj *novaQuadrica();
 
-GLUquadricObj *chao = novaQuadrica();
+GLUquadricObj *legs = novaQuadrica();
 
 void teclado(unsigned char key, int x, int y);
 
@@ -208,10 +216,8 @@ void draw(){
 	glRotatef(rotZ, 0,0,1);
 
 	//CHAO
-
 	glRotatef(-90,1,0,0);
-	glRotatef(-90,0,0,1);
-
+	glTranslatef(-20,-20,0);// para colocar o labirinto mais no centro da dela
 	glBegin(GL_QUADS);
 		glVertex3f(0,0,0);
 		glVertex3f(hMaze,0,0);
@@ -219,12 +225,10 @@ void draw(){
 		glVertex3f(0,wMaze,0);
 	glEnd();
 
+	//LABIRINTO
 	glColor3f(1,0,0);
-
-
-	//glutSolidCube(1);
 	drawMaze(wMaze, hMaze);
-	drawRobo();
+	drawRobot();
 
 
 	glFlush();
@@ -296,32 +300,35 @@ void specialKeys(int key, int x, int y) {
 		case GLUT_KEY_DOWN: //anda pra baixo no mapa
 			if(posRobo[X]+2 <= hMaze)
 				if(labirinto[posRobo[X]+2][posRobo[Y]] == 1)
-					posRobo[X]++;
+					if(labirinto[posRobo[X]+2][posRobo[Y]-1] == 1 && labirinto[posRobo[X]+2][posRobo[Y]+1] == 1 )
+						posRobo[X]++;
 			break;
 		case GLUT_KEY_UP: //anda pra cima no mapa
-
 			if(posRobo[X]-2 >=0)
 				if(labirinto[posRobo[X]-2][posRobo[Y]] == 1)
-					posRobo[X]--;
+					if(labirinto[posRobo[X]-2][posRobo[Y]-1] == 1 && labirinto[posRobo[X]-2][posRobo[Y]+1] == 1)
+						posRobo[X]--;
 			break;
 		case GLUT_KEY_LEFT: //anda pra esquerda no mapa
-			printf("pi\n");
 			if(posRobo[Y]-2 >= 0)
 				if(labirinto[posRobo[X]][posRobo[Y]-2] == 1)
-					posRobo[Y]--;
+					if(labirinto[posRobo[X]+1][posRobo[Y]-2] == 1 && labirinto[posRobo[X]-1][posRobo[Y]-2] == 1)
+						posRobo[Y]--;
 			break;
 		case GLUT_KEY_RIGHT: //anda pra direita no mapa
 			//se tiver mais duas posicoes pra direita no mapa
 			if(posRobo[Y]+2 < wMaze)
 				if(labirinto[posRobo[X]][posRobo[Y]+2] == 1)
-					posRobo[Y]++;
+					if(labirinto[posRobo[X]+1][posRobo[Y]+2] == 1 && labirinto[posRobo[X]-1][posRobo[Y]+2] == 1)
+						posRobo[Y]++;
 			break;
 	}
 	glutPostRedisplay();
 }
 
 void drawMaze( double w, double h){
-	glTranslatef(0,0,1);
+	glPushMatrix();
+	glTranslatef(0,0,1.5);
 	//para cada linha da matriz do labirinto
 	for(int i = 0; i < h; i++){
 		//para cada coluna da matriz do labirinto
@@ -330,7 +337,6 @@ void drawMaze( double w, double h){
 			if(labirinto[i][j] == 0){
 				//desenhar parede
 				glPushMatrix();
-					glTranslatef(0,0,ALTURA_PAREDE/2);
 					glColor3f(1,0,0);
 					glScalef(1,1,ALTURA_PAREDE);
 					glTranslatef(i,j,0);
@@ -339,15 +345,14 @@ void drawMaze( double w, double h){
 			}else if(labirinto[i][j] == CONE){
 				glPushMatrix();
 					glColor3f(1,0.6,0.5);
-					glTranslatef(i,j,0);
-					glutSolidCube(1);
+					glTranslatef(i,j,-1.5);
+					glutSolidCone(1,ALTURA_PAREDE,50,50);
 				glPopMatrix();
 			}else if(labirinto[i][j] == TORUS){
 				glPushMatrix();
 					glColor3f(1,1,0);
 					glTranslatef(i,j,0);
 					glRotatef(90,0,1,0);
-//					glScalef(-0.5,-0.5,-0.5);
 					glRotatef(rotateTORUS++,1,0,0);
 					glutSolidTorus(0.3, 0.7,50,50);
 				glPopMatrix();
@@ -357,22 +362,60 @@ void drawMaze( double w, double h){
 					glTranslatef(i,j,0);
 					glRotatef(90,1,0,0);
 					glRotatef(rotateTEAPOT++,0,1,0);
-//					glScalef(1,1,0.5);
-//					glRotatef(rotateTORUS++,1,0,0);
 					glutSolidTeapot(0.75);
 				glPopMatrix();
 			}
 		}
 	}
+	glPopMatrix();
 };
 
-void drawRobo(){
+void drawRobot(){
+//	printf("X=%d, Y=%d, Z=%d\n",posRobo[X],posRobo[Y],posRobo[Z]);
+
+	//Pernas
+	glColor3f(0.1f,0.2f,0.3f);
 	glPushMatrix();
-		glColor3f(0.2,0.1,0.7);
-		glTranslatef(posRobo[X],posRobo[Y],posRobo[Z]);
-		glRotatef(90,1,0,0);
-		glRotatef(90,0,1,0);
-		glutSolidTeapot(1);
+		glTranslatef(posRobo[X]-0.4, posRobo[Y],posRobo[Z]);
+		gluCylinder(legs,0.3,0.3,TAM_LEG,10,10);
 	glPopMatrix();
-	//glutPostRedisplay();
+	glPushMatrix();
+		glTranslatef(posRobo[X]+0.4, posRobo[Y], posRobo[Z]);
+		gluCylinder(legs,0.3,0.3,TAM_LEG,10,10);
+	glPopMatrix();
+
+	//TRONCO
+	glColor3f(0.2f,0.3f,0.4f);
+	glPushMatrix();
+		glTranslatef(posRobo[X],posRobo[Y],posRobo[Z]+TAM_LEG+TAM_TRONCO);
+		glScalef(1,1,TAM_TRONCO);
+		glutSolidCube(2);
+	glPopMatrix();
+
+
+	//"OMBROS
+	glColor3f(0.5f,0.5f,0.5f);
+	glPushMatrix();
+		glTranslatef(posRobo[X]+1,posRobo[Y],posRobo[Z]+TAM_LEG+(TAM_TRONCO*2));
+		glutSolidCube(0.5);
+	glPopMatrix();
+
+	//PESCOÇO
+	glColor3f(0.5f,0.6f,0.7f);
+	glPushMatrix();
+		glTranslatef(posRobo[X],posRobo[Y],posRobo[Z]+TAM_LEG+(TAM_TRONCO*2)+(TAM_PESCOCO/2));
+		glRotatef(180,0,1,0);
+		glutSolidCone(1,TAM_PESCOCO, 50,50);
+	glPopMatrix();
+
+
+//	glutPostRedisplay();
 };
+
+void drawLegs(){
+	glColor3f(0.7f,0.7f,0.7f);
+//	glTranslatef(posRobo[X], posRobo[Y],posRobo[Z]);
+	gluCylinder(legs,0.3,0.3,2,10,10);
+	//glTranslatef(posRobo[X]+1,posRobo[Y],posRobo[Z]);
+
+}
