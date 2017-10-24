@@ -295,18 +295,18 @@ void specialKeys(int key, int x, int y) {
 						if(lastMotion == BAIXO || lastMotion == -1){
 							lastMotion = BAIXO;
 							posRobo[X]++;
-							rotateRobo = 0;
+							rotateRobo = -90;
 						}else if(lastMotion == CIMA){
 							lastMotion = CIMA;
-							rotateRobo = 180;
+							rotateRobo = 90;
 							printf("BAIXO 180\n");
 						}else if(lastMotion == ESQUERDA){
 							lastMotion = BAIXO;
-							rotateRobo = 90;
+							rotateRobo = 180;
 							printf("BAIXO 90\n");
 						}else if(lastMotion == DIREITA){
 							lastMotion = BAIXO;
-							rotateRobo = -90;
+							rotateRobo = 0;
 							printf("BAIXO -90\n");
 						}
 						lastMotion = BAIXO;
@@ -322,18 +322,18 @@ void specialKeys(int key, int x, int y) {
 						if(lastMotion == CIMA || lastMotion == -1){
 							posRobo[X]--;
 							lastMotion = CIMA;
-							rotateRobo = 0;
+							rotateRobo = 90;
 						}else if(lastMotion == BAIXO){
 							lastMotion = CIMA;
-							rotateRobo = 180;
+							rotateRobo = -90;
 							printf("CIMA 180\n");
 						}else if(lastMotion == ESQUERDA){
 							lastMotion = CIMA;
-							rotateRobo = -90;
+							rotateRobo = 180;
 							printf("CIMA -90\n");
 						}else if(lastMotion == DIREITA){
 							lastMotion = CIMA;
-							rotateRobo = 90;
+							rotateRobo = -90;
 							printf("CIMA 90\n");
 						}
 						lastMotion = CIMA;
@@ -349,7 +349,7 @@ void specialKeys(int key, int x, int y) {
 						if(lastMotion == ESQUERDA || lastMotion == -1){
 							posRobo[Y]--;
 							lastMotion = ESQUERDA;
-							rotateRobo = 0;
+							rotateRobo = 180;
 						}else if(lastMotion == CIMA){
 							lastMotion = ESQUERDA;
 							rotateRobo = 90;
@@ -360,7 +360,7 @@ void specialKeys(int key, int x, int y) {
 							printf("ESQUERDA -90\n");
 						}else if(lastMotion == DIREITA){
 							lastMotion = ESQUERDA;
-							rotateRobo = 180;
+							rotateRobo = 0;
 							printf("ESQUERDA 180\n");
 						}
 						lastMotion = ESQUERDA;
@@ -387,11 +387,11 @@ void specialKeys(int key, int x, int y) {
 							printf("DIREITA 180\n");
 						}else if(lastMotion == CIMA){
 							lastMotion = DIREITA;
-							rotateRobo = -90;
+							rotateRobo = 90;
 							printf("DIREITA -90\n");
 						}else if(lastMotion == BAIXO){
 							lastMotion = DIREITA;
-							rotateRobo = 90;
+							rotateRobo = -90;
 							printf("DIREITA 90\n");
 						}
 						lastMotion = DIREITA;
