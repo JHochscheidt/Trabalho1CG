@@ -154,7 +154,43 @@ void reshapeWindow(GLsizei w, GLsizei h){
 void draw(){
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
+	GLfloat luzAmbiente[4] = { 0.2,0.2,0.2,1.0 };
+	GLfloat luzDifusa[4] = { 0.5,0.5,0.5, 1.0 };	   // "cor"
+	GLfloat luzEspecular[4] = { 0.7,0.7,0.7, 1.0 };// "brilho"
+	GLfloat posicaoLuz[4] = { 0.0, 50.0, 50.0, 1.0 };
+	//
+	// Capacidade de brilho do material
+	GLfloat especularidade[4] = { 1.0,1.0,1.0,1.0 };
+	GLint especMaterial = 10;
+
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	// Habilita o modelo de coloriza��o de Gouraud
+	glShadeModel(GL_SMOOTH);
+
+	// Define a reflet�ncia do material
+	glMaterialfv(GL_FRONT, GL_SPECULAR, especularidade);
+	// Define a concentra��o do brilho
+	glMateriali(GL_FRONT, GL_SHININESS, especMaterial);
+
+	// Ativa o uso da luz ambiente
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, luzAmbiente);
+
+	// Define os par�metros da luz de n�mero 0
+	glLightfv(GL_LIGHT1, GL_AMBIENT, luzAmbiente);
+	glLightfv(GL_LIGHT1, GL_DIFFUSE, luzDifusa);
+	glLightfv(GL_LIGHT1, GL_SPECULAR, luzEspecular);
+	glLightfv(GL_LIGHT1, GL_POSITION, posicaoLuz);
+
+	// Habilita a defini��o da cor do material a partir da cor corrente
+	glEnable(GL_COLOR_MATERIAL);
+	//Habilita o uso de ilumina��o
+	glEnable(GL_LIGHTING);
+	// Habilita a luz de n�mero 0
+	glEnable(GL_LIGHT1);
+	// Habilita o depth-buffering
+	glEnable(GL_DEPTH_TEST);
 
 	if(CAM_ATUAL == ROBO){
 		camera[X] = posRobo[X];
@@ -632,4 +668,3 @@ int main(int argc, char **argv) {
 
 	glutMainLoop();
 }
-
