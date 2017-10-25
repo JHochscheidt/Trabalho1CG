@@ -111,7 +111,6 @@ bool fullScreenMode = true;
 #define ESQUERDA 2
 #define CIMA 3
 #define BAIXO 4
-
 double TAM_LEG = 1.5;	 //comprimento das pernas
 double TAM_TRONCO = 1.5; //comprimeiro do tronco do boneco
 double TAM_PESCOCO = 1.5; //comprimento pescoço
@@ -120,14 +119,24 @@ double rotX = 0, rotY = 0, rotZ = 0;
 double rotateTORUS = 0;
 double rotateTEAPOT = 0;
 int lastMotion = -1;
+double angleRotateRobot = 0;
 double rotateRobo = 0;
+double rotateArms = 0;
+double rotateHead = 0;
+int CAM_ATUAL = 0;
+bool ROT_ARM_FRONT = true;
+bool ROT_HEAD_RIGHT = true;
 int posRobo[3] = {22,0,0};
+
 
 
 #define ROBO 9
 //posicao inicial da camera -- vetor[3] = [x,y,z]
-double camera[3] = {0,25,-50};
-
+double camera[3] = {hMaze/2,wMaze/2,100};
+double focus[3] = {hMaze/2,wMaze/2,0}; // para onde a camera esta olhando
+int rotMaze[3] = {0,0,0};
+double rotateMaze = 0;
+int trMaze[3] = {0,0,0};
 //Função para tela cheia
 void specialKeys(int key, int x, int y);
 
@@ -139,6 +148,8 @@ void reshapeWindow(GLsizei w, GLsizei h);
 
 void draw();
 
+void animate(int value);
+
 void drawMaze(double w, double h);
 
 void drawRobot();
@@ -147,6 +158,8 @@ GLUquadricObj *novaQuadrica();
 
 GLUquadricObj *neck = novaQuadrica();
 GLUquadricObj *ear = novaQuadrica();
+GLUquadricObj *leg = novaQuadrica();
+GLUquadricObj *arm = novaQuadrica();
 
 void teclado(unsigned char key, int x, int y);
 
@@ -173,6 +186,7 @@ int main(int argc, char **argv) {
 
 	//FUNCOES DE CALLBACK
 	glutReshapeFunc(reshapeWindow);
+	glutTimerFunc(150, animate, 1);
 	glutDisplayFunc(draw);
 	glutSpecialFunc(specialKeys);
 	glutFullScreen();
@@ -196,7 +210,34 @@ void draw(){
 	glLoadIdentity();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	gluLookAt(camera[X],camera[Y], camera[Z], 0,0,0, 0,1,0);
+	switch(CAM_ATUAL){
+		case BAIXO:	//F2
+			break;
+		case DIREITA: //F3
+			camera[X] = 5;
+			camera[Y] = 5;
+			camera[Z] = 100;
+			rotMaze[X] = 0;
+			rotMaze[Y] = 0;
+			rotMaze[Z] = 1;
+			rotateMaze = -90;
+//			trMaze[X] = -trMaze[X];
+//			trMaze[Y] = -trMaze[Y] + hMaze;
+//			trMaze[Z] = -trMaze[Z];
+			focus[X] = posRobo[X];
+			focus[Y] = posRobo[Y];
+			focus[Z] = posRobo[Z];
+
+			CAM_ATUAL = -1;
+			break;
+		case CIMA:	//F4
+			break;
+		case ESQUERDA:	//F5
+			break;
+	}
+
+
+	gluLookAt(camera[X],camera[Y], camera[Z], focus[X],focus[Y],focus[Z], 0,1,0);
 
 	glColor3f(0.5,0.75,0.25);
 
@@ -205,29 +246,96 @@ void draw(){
 	glRotatef(-rotY, 0,1,0);
 	glRotatef(-rotZ, 0,0,1);
 
+	glTranslatef(trMaze[X],trMaze[Y],trMaze[Z]);
+	glRotatef(rotateMaze, rotMaze[X], rotMaze[Y], rotMaze[Z]);
 
-	glRotatef(180,0,1,0);
-	glRotatef(-80,1,0,0);
-	glTranslatef(-20,-10,0);
-	//CHAO
+
+
+	//CHAO PLANO XY
 	glBegin(GL_QUADS);
 		glVertex3f(0,0,0);
 		glVertex3f(hMaze,0,0);
 		glVertex3f(hMaze,wMaze,0);
 		glVertex3f(0,wMaze,0);
 	glEnd();
+	glBegin(GL_QUADS); //PLANO XZ
+		glColor3f(1,1,0.5);
+		glVertex3f(0,0,0);
+		glVertex3f(0,0,10);
+		glVertex3f(10,0,10);
+		glVertex3f(10,0,0);
+	glEnd();
+	glBegin(GL_QUADS); //PLANO YZ
+		glColor3f(0.5,0.5,0.5);
+		glVertex3f(0,0,0);
+		glVertex3f(0,10,0);
+		glVertex3f(0,10,10);
+		glVertex3f(0,0,10);
+
+	glEnd();
+
 
 	//LABIRINTO
 	glColor3f(1,0,0);
 	drawMaze(wMaze, hMaze);
 
+
 	//ROBO
 	drawRobot();
 
-	glFlush();
 	glutSwapBuffers();
 
 	glutPostRedisplay();
+
+	//MOVIMENTOS DA CABEÇA
+	if(ROT_HEAD_RIGHT == true){
+		//rotaciona ate chegar no 30
+		if(rotateHead < 30){
+			rotateHead = rotateHead + 1;
+		}else{
+			ROT_HEAD_RIGHT = false;
+		}
+	}else if(ROT_HEAD_RIGHT == false){
+		if(rotateHead > -30){
+			rotateHead = rotateHead - 1;
+		}else{
+			ROT_HEAD_RIGHT = true;
+		}
+	}
+
+	//MOVIMENTOS DOS BRAÇOS
+	if(ROT_ARM_FRONT == true){
+		if(rotateArms < 30){
+			rotateArms = rotateArms + 0.5;
+		}else{
+			ROT_ARM_FRONT = false;
+		}
+	}else if(ROT_ARM_FRONT == false){
+		if(rotateArms > -30){
+			rotateArms = rotateArms - 0.5;
+		}else{
+			ROT_ARM_FRONT = true;
+		}
+	}
+
+}
+
+void animate(int value){
+
+	//rotaciona o robo
+	if(rotateRobo == 90 && angleRotateRobot < 90){
+		angleRotateRobot+=5;
+	}else if(rotateRobo == 180 && angleRotateRobot < 180){
+		angleRotateRobot+=5;
+	}else if(rotateRobo == -90 && angleRotateRobot > -90){
+		angleRotateRobot-=5;
+	}else{
+		angleRotateRobot = 0;
+	}
+
+	glutPostRedisplay();
+	draw();
+	glutTimerFunc(250,animate,1);
 }
 
 GLUquadricObj *novaQuadrica(){
@@ -286,6 +394,19 @@ void specialKeys(int key, int x, int y) {
 				glutPositionWindow(windowPosX, windowPosX);   // Posição do topo canto esquerdo
 			}
 			break;
+		case GLUT_KEY_F2: //camera atras do robo e mostrando todo o labirinto
+			CAM_ATUAL = BAIXO; //camera atras do robo
+			break;
+		case GLUT_KEY_F3: // camera lado direito labirinto
+			CAM_ATUAL = DIREITA; //camera do lado direito do labirinto
+			break;
+		case GLUT_KEY_F4: //camera na frente do labirinto
+			CAM_ATUAL = CIMA; //camera "em cima" do labirinto
+			break;
+		case GLUT_KEY_F5: //camera lado esquerdo labirinto
+			CAM_ATUAL = ESQUERDA; //camera do lado esquerdo do labirinto
+			break;
+
 		case GLUT_KEY_DOWN: //anda pra baixo no mapa
 			if(posRobo[X]+2 <= hMaze){
 				if(labirinto[posRobo[X]+2][posRobo[Y]] == 1){
@@ -357,11 +478,11 @@ void specialKeys(int key, int x, int y) {
 						}else if(lastMotion == BAIXO){
 							lastMotion = ESQUERDA;
 							rotateRobo = -90;
-							printf("ESQUERDA -90\n");
+//							printf("ESQUERDA -90\n");
 						}else if(lastMotion == DIREITA){
 							lastMotion = ESQUERDA;
 							rotateRobo = 0;
-							printf("ESQUERDA 180\n");
+//							printf("ESQUERDA 180\n");
 						}
 						lastMotion = ESQUERDA;
 					}
@@ -455,46 +576,28 @@ void drawMaze( double w, double h){
 
 void drawRobot(){
 
+
+
 	glPushMatrix();
 		glTranslatef(posRobo[X],posRobo[Y],posRobo[Z]);
 		//rotacoes conforme teclado
 		printf("ROOOOT %f\n", rotateRobo);
 
-		glRotatef(rotateRobo,0,0,1);
+		glRotatef(angleRotateRobot,0,0,1);
 
 		//Pernas
 		glColor3f(0.4f,0.4f,0.4f);
 		glPushMatrix();
-			glTranslatef(-0.50, 0, 0.25);
-			glutSolidSphere(0.25,20,20);
+			glTranslatef(0.4,0,2);
+			glRotatef(-rotateArms,1,0,0);
+			glRotatef(-180,1,0,0);
+			gluCylinder(leg, 0.15, 0.15, 2, 50,50);
 		glPopMatrix();
 		glPushMatrix();
-			glTranslatef(0.5, 0, 0.25);
-			glutSolidSphere(0.25,20,20);
-		glPopMatrix();
-		glPushMatrix();
-			glTranslatef(-0.5, 0, 0.25*3);
-			glutSolidSphere(0.25,20,20);
-		glPopMatrix();
-		glPushMatrix();
-			glTranslatef(0.5, 0, 0.25*3);
-			glutSolidSphere(0.25,20,20);
-		glPopMatrix();
-		glPushMatrix();
-			glTranslatef(-0.5, 0, 0.25*5);
-			glutSolidSphere(0.25,20,20);
-		glPopMatrix();
-		glPushMatrix();
-			glTranslatef(0.5, 0, 0.25*5);
-			glutSolidSphere(0.25,20,20);
-		glPopMatrix();
-		glPushMatrix();
-			glTranslatef(-0.5, 0, 0.25*7);
-			glutSolidSphere(0.25,20,20);
-		glPopMatrix();
-		glPushMatrix();
-			glTranslatef(0.5, 0, 0.25*7);
-			glutSolidSphere(0.25,20,20);
+			glTranslatef(-0.4,0,2);
+			glRotatef(rotateArms,1,0,0);
+			glRotatef(-180,1,0,0);
+			gluCylinder(leg, 0.15, 0.15, 2, 50,50);
 		glPopMatrix();
 
 //		TRONCO
@@ -509,17 +612,23 @@ void drawRobot(){
 		glColor3f(0.2f,0.2f,0.2f);
 		//BRAÇO DIREITO
 		glPushMatrix();
-			glTranslatef(1.125, 0, 0.25*13);
+			glTranslatef(1.125, 0, 0.25*16);
+			glutSolidSphere(0.25,50,50);
 			glRotatef(-4.5,0,1,0);
+			glRotatef(rotateArms, 1,0,0);
+			glRotatef(-180,1,0,0);
 			glScalef(1,2,10);
-			glutSolidCube(0.25);
+			gluCylinder(arm,0.25,0.25, 0.25, 50,50);
 		glPopMatrix();
 		//BRAÇO ESQUERDO
 		glPushMatrix();
-			glTranslatef(-1.125, 0, 0.25*13);
+			glTranslatef(-1.125, 0, 0.25*16);
+			glutSolidSphere(0.25,50,50);
 			glRotatef(+4.5,0,1,0);
+			glRotatef(-rotateArms, 1,0,0);
+			glRotatef(-180,1,0,0);
 			glScalef(1,2,10);
-			glutSolidCube(0.25);
+			gluCylinder(arm,0.25,0.25, 0.25, 50,50);
 		glPopMatrix();
 
 		//PESCOÇO
@@ -530,43 +639,45 @@ void drawRobot(){
 		glPopMatrix();
 
 		//CABEÇA
-		glColor3f(0.65f,0.55f,0.44f);
 		glPushMatrix();
-			glTranslatef(0, 0, 0.25*24);
-	//		glScalef(1,1,1.75);
-			glutSolidSphere(0.75,50,50);
-		glPopMatrix();
+			glRotatef(rotateHead,0,0,1);
+			glColor3f(0.65f,0.55f,0.44f);
+			glPushMatrix();
+				glTranslatef(0, 0, 0.25*24);
+		//		glScalef(1,1,1.75);
+				glutSolidSphere(0.75,50,50);
+			glPopMatrix();
 
-		//ORELHA
-		glColor3f(0.25f,0.25f,0.25f);
-		//ORELHA DIREITA
-		glPushMatrix();
-			glTranslatef(0.5, 0, 0.25*26);
-			glRotatef(90,1,0,0);
-			glScalef(0.75,0.75,0.75);
-			glutSolidTorus(0.25,0.5,50,50);
-		glPopMatrix();
-		//ORELHA ESQUERDA
-		glPushMatrix();
-			glTranslatef(-0.5, 0, 0.25*26);
-			glRotatef(90,1,0,0);
-			glScalef(0.75,0.75,0.75);
-			glutSolidTorus(0.25,0.5,50,50);
-		glPopMatrix();
+			//ORELHA
+			glColor3f(0.25f,0.25f,0.25f);
+			//ORELHA DIREITA
+			glPushMatrix();
+				glTranslatef(0.5, 0, 0.25*26);
+				glRotatef(90,1,0,0);
+				glScalef(0.75,0.75,0.75);
+				glutSolidTorus(0.25,0.5,50,50);
+			glPopMatrix();
+			//ORELHA ESQUERDA
+			glPushMatrix();
+				glTranslatef(-0.5, 0, 0.25*26);
+				glRotatef(90,1,0,0);
+				glScalef(0.75,0.75,0.75);
+				glutSolidTorus(0.25,0.5,50,50);
+			glPopMatrix();
 
-		//OLHOS
-		glColor3f(1,1,1);
-		//OLHO DIREITO
-		glPushMatrix();
-			glTranslatef(0.25, 0.45, 0.25*24.75);
-			glutSolidSphere(0.25,50,50);
+			//OLHOS
+			glColor3f(1,1,1);
+			//OLHO DIREITO
+			glPushMatrix();
+				glTranslatef(0.25, 0.45, 0.25*24.75);
+				glutSolidSphere(0.25,50,50);
+			glPopMatrix();
+			//OLHO ESQUERDO
+			glPushMatrix();
+				glTranslatef(-0.25, 0.45, 0.25*24.75);
+				glutSolidSphere(0.25,50,50);
+			glPopMatrix();
 		glPopMatrix();
-		//OLHO ESQUERDO
-		glPushMatrix();
-			glTranslatef(-0.25, 0.45, 0.25*24.75);
-			glutSolidSphere(0.25,50,50);
-		glPopMatrix();
-
 	glPopMatrix();
 };
 
