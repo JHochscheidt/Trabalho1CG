@@ -8,23 +8,22 @@
 //============================================================================
 
 #include <GL/glut.h>
-
-//Declaracao de variaveis globais e defines
+#include <stdio.h>
 
 #define wMaze 75
 #define hMaze 45
+#define X 0
+#define Y 1
+#define Z 2
+#define CONE 2
+#define TORUS 3
+#define ALTURA_PAREDE 2
+#define TEAPOT 4
+#define DIREITA 1
+#define ESQUERDA 2
+#define CIMA 3
+#define BAIXO 4
 
-//double labirinto[hMaze][wMaze] ={
-//		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-//		{0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0},
-//		{0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0},
-//		{0,0,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,1,1,0,0,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,1,1,0},
-//		{0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0},
-//		{0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0},
-//		{0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0},
-//
-//};
-//
 int labirinto[hMaze][wMaze]={
 		//Linha 1
 		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -91,29 +90,14 @@ int labirinto[hMaze][wMaze]={
 };
 
 
-//rotate no X -- muda objeto deitado
-//rotate no Y -- muda objeto pra frente pra tras
-//rotate no Z
-
 int windowWidth  = 700;
 int windowHeight = 700;
 int windowPosX   = 0;
 int windowPosY   = 0;
 bool fullScreenMode = true;
-#define X 0
-#define Y 1
-#define Z 2
-#define CONE 2
-#define TORUS 3
-#define ALTURA_PAREDE 2
-#define TEAPOT 4
-#define DIREITA 1
-#define ESQUERDA 2
-#define CIMA 3
-#define BAIXO 4
-double TAM_LEG = 1.5;	 //comprimento das pernas
-double TAM_TRONCO = 1.5; //comprimeiro do tronco do boneco
-double TAM_PESCOCO = 1.5; //comprimento pescoço
+//double TAM_LEG = 1.5;	 //comprimento das pernas
+//double TAM_TRONCO = 1.5; //comprimeiro do tronco do boneco
+//double TAM_PESCOCO = 1.5; //comprimento pescoço
 double angPerspective = 45;
 double rotX = 0, rotY = 0, rotZ = 0;
 double rotateTORUS = 0;
@@ -128,72 +112,34 @@ bool ROT_ARM_FRONT = true;
 bool ROT_HEAD_RIGHT = true;
 int posRobo[3] = {22,0,0};
 
-
-
 #define ROBO 9
-//posicao inicial da camera -- vetor[3] = [x,y,z]
 double camera[3] = {hMaze/2,wMaze/2,100};
 double focus[3] = {hMaze/2,wMaze/2,0}; // para onde a camera esta olhando
 int rotMaze[3] = {0,0,0};
 double rotateMaze = 0;
 int trMaze[3] = {0,0,0};
-//Função para tela cheia
-void specialKeys(int key, int x, int y);
-
-#include <GL/glut.h>
-#include <stdio.h>
-
-
-void reshapeWindow(GLsizei w, GLsizei h);
-
-void draw();
-
-void animate(int value);
-
-void drawMaze(double w, double h);
-
-void drawRobot();
 
 GLUquadricObj *novaQuadrica();
+void reshapeWindow(GLsizei w, GLsizei h);
+void draw();
+void animate(int value);
+void teclado(unsigned char key, int x, int y);
+void specialKeys(int key, int x, int y);
+void drawMaze( double w, double h);
+void drawRobot();
+
+GLUquadricObj *novaQuadrica(){
+	GLUquadricObj *novaQuadrica = gluNewQuadric();
+	gluQuadricDrawStyle(novaQuadrica, GLU_FILL);
+	gluQuadricOrientation(novaQuadrica, GLU_OUTSIDE);
+	gluQuadricNormals(novaQuadrica, GLU_SMOOTH);
+	return novaQuadrica;
+}
 
 GLUquadricObj *neck = novaQuadrica();
 GLUquadricObj *ear = novaQuadrica();
 GLUquadricObj *leg = novaQuadrica();
 GLUquadricObj *arm = novaQuadrica();
-
-void teclado(unsigned char key, int x, int y);
-
-//##########################//
-//$$$$$$$$$$$$$$$$$$$$$$$$$$//
-//			MAIN			//
-//$$$$$$$$$$$$$$$$$$$$$$$$$$//
-//##########################//
-int main(int argc, char **argv) {
-
-	//inicializa GLUT com parametros necessarios
-
-	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
-
-	//cria JANELA DE VISUALIZACAO
-	glutInitWindowPosition(windowPosX,windowPosY);
-	glutInitWindowSize(windowWidth,windowHeight);
-	glutCreateWindow("Labirinto 3D");
-
-	glClearColor(0,0,0,1);
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LESS);
-
-	//FUNCOES DE CALLBACK
-	glutReshapeFunc(reshapeWindow);
-	glutTimerFunc(150, animate, 1);
-	glutDisplayFunc(draw);
-	glutSpecialFunc(specialKeys);
-	glutFullScreen();
-	glutKeyboardFunc(teclado);
-
-	glutMainLoop();
-}
 
 void reshapeWindow(GLsizei w, GLsizei h){
 	if(h ==0) h = 1;
@@ -210,34 +156,14 @@ void draw(){
 	glLoadIdentity();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	switch(CAM_ATUAL){
-		case BAIXO:	//F2
-			break;
-		case DIREITA: //F3
-			camera[X] = 5;
-			camera[Y] = 5;
-			camera[Z] = 100;
-			rotMaze[X] = 0;
-			rotMaze[Y] = 0;
-			rotMaze[Z] = 1;
-			rotateMaze = -90;
-//			trMaze[X] = -trMaze[X];
-//			trMaze[Y] = -trMaze[Y] + hMaze;
-//			trMaze[Z] = -trMaze[Z];
-			focus[X] = posRobo[X];
-			focus[Y] = posRobo[Y];
-			focus[Z] = posRobo[Z];
-
-			CAM_ATUAL = -1;
-			break;
-		case CIMA:	//F4
-			break;
-		case ESQUERDA:	//F5
-			break;
+	if(CAM_ATUAL == ROBO){
+		camera[X] = posRobo[X];
+		camera[Y] = posRobo[Y] - 10;
+		camera[Z] = 15;
+		gluLookAt(camera[X],camera[Y], camera[Z], posRobo[X],posRobo[Y], posRobo[Z], 0,1,0);
+	}else{
+		gluLookAt(camera[X],camera[Y], camera[Z], focus[X],focus[Y],focus[Z], 0,1,0);
 	}
-
-
-	gluLookAt(camera[X],camera[Y], camera[Z], focus[X],focus[Y],focus[Z], 0,1,0);
 
 	glColor3f(0.5,0.75,0.25);
 
@@ -245,9 +171,6 @@ void draw(){
 	glRotatef(-rotX, 1,0,0);
 	glRotatef(-rotY, 0,1,0);
 	glRotatef(-rotZ, 0,0,1);
-
-	glTranslatef(trMaze[X],trMaze[Y],trMaze[Z]);
-	glRotatef(rotateMaze, rotMaze[X], rotMaze[Y], rotMaze[Z]);
 
 
 
@@ -338,14 +261,6 @@ void animate(int value){
 	glutTimerFunc(250,animate,1);
 }
 
-GLUquadricObj *novaQuadrica(){
-	GLUquadricObj *novaQuadrica = gluNewQuadric();
-	gluQuadricDrawStyle(novaQuadrica, GLU_FILL);
-	gluQuadricOrientation(novaQuadrica, GLU_OUTSIDE);
-	gluQuadricNormals(novaQuadrica, GLU_SMOOTH);
-	return novaQuadrica;
-}
-
 void teclado(unsigned char key, int x, int y){
 	switch(key){
 		case 'q':
@@ -378,8 +293,7 @@ void teclado(unsigned char key, int x, int y){
 	glutPostRedisplay();
 }
 
-//Função para tela cheia
-void specialKeys(int key, int x, int y) {
+void specialKeys(int key, int x, int y){
 	switch (key) {
 		case GLUT_KEY_F1:    // F1: Para trocar entre tela cheia e janela
 			fullScreenMode = !fullScreenMode;         // Estado de troca
@@ -395,7 +309,7 @@ void specialKeys(int key, int x, int y) {
 			}
 			break;
 		case GLUT_KEY_F2: //camera atras do robo e mostrando todo o labirinto
-			CAM_ATUAL = BAIXO; //camera atras do robo
+			CAM_ATUAL = ROBO; //camera atras do robo
 			break;
 		case GLUT_KEY_F3: // camera lado direito labirinto
 			CAM_ATUAL = DIREITA; //camera do lado direito do labirinto
@@ -578,6 +492,7 @@ void drawRobot(){
 
 
 
+
 	glPushMatrix();
 		glTranslatef(posRobo[X],posRobo[Y],posRobo[Z]);
 		//rotacoes conforme teclado
@@ -618,7 +533,7 @@ void drawRobot(){
 			glRotatef(rotateArms, 1,0,0);
 			glRotatef(-180,1,0,0);
 			glScalef(1,2,10);
-			gluCylinder(arm,0.25,0.25, 0.25, 50,50);
+			gluCylinder(arm,0.15,0.15, 0.25, 50,50);
 		glPopMatrix();
 		//BRAÇO ESQUERDO
 		glPushMatrix();
@@ -628,7 +543,7 @@ void drawRobot(){
 			glRotatef(-rotateArms, 1,0,0);
 			glRotatef(-180,1,0,0);
 			glScalef(1,2,10);
-			gluCylinder(arm,0.25,0.25, 0.25, 50,50);
+			gluCylinder(arm,0.15,0.15, 0.25, 50,50);
 		glPopMatrix();
 
 		//PESCOÇO
@@ -679,5 +594,42 @@ void drawRobot(){
 			glPopMatrix();
 		glPopMatrix();
 	glPopMatrix();
+
+
 };
+
+
+
+
+//##########################//
+//$$$$$$$$$$$$$$$$$$$$$$$$$$//
+//			MAIN			//
+//$$$$$$$$$$$$$$$$$$$$$$$$$$//
+//##########################//
+int main(int argc, char **argv) {
+
+	//inicializa GLUT com parametros necessarios
+
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
+
+	//cria JANELA DE VISUALIZACAO
+	glutInitWindowPosition(windowPosX,windowPosY);
+	glutInitWindowSize(windowWidth,windowHeight);
+	glutCreateWindow("Labirinto 3D");
+
+	glClearColor(0,0,0,1);
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
+
+	//FUNCOES DE CALLBACK
+	glutReshapeFunc(reshapeWindow);
+	glutTimerFunc(150, animate, 1);
+	glutDisplayFunc(draw);
+	glutSpecialFunc(specialKeys);
+	glutFullScreen();
+	glutKeyboardFunc(teclado);
+
+	glutMainLoop();
+}
 
