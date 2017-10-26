@@ -15,12 +15,12 @@
 #define X 0
 #define Y 1
 #define Z 2
-#define CONE 2
+#define MESA 2
 #define TORUS 3
-#define ALTURA_PAREDE 3
+#define OBJS 5
+#define ALTURA_PAREDE 12
 #define TEAPOT 4
 #define CAM_PADRAO 2
-#define CAM_TRAS 3
 #define CAM_ROBO 4
 #define FRENTE 1
 #define TRAS 2
@@ -36,52 +36,6 @@ GLfloat light_position[] = { 0.0, 500.0, 0.0, 1.0 };
 GLfloat luz_branca[] = {1.0,1.0,1.0,1.0};
 GLfloat lmodel_ambient[] = {0.6,0.6,0.6,1.0};
 GLuint chaoid;
-
-void swapRB(unsigned char & b, unsigned char & r) {
-	unsigned char x;
-	x = r;
-	r = b;
-	b = x;
-}
-
-unsigned char *  loadBMP_custom(const char * filename, unsigned int &width, unsigned int &height) {
-// Data read from the header of the BMP file
-unsigned char header[54]; // Each BMP file begins by a 54-bytes header
-unsigned int dataPos;     // Position in the file where the actual data begins
-//unsigned int width, height;
-unsigned int imageSize;   // = width*height*3
-// Actual RGB data
-unsigned char * data;
-// Open the file
-FILE * file;
-file = fopen( filename, "rb");
-if (!file) { printf("Image could not be opened\n"); return 0; };
-if (fread(header, 1, 54, file) != 54) { // If not 54 bytes read : problem
-	printf("Not a correct BMP file\n");
-	return 0;
-}
-if (header[0] != 'B' || header[1] != 'M') {
-	printf("Not a correct BMP file\n");
-	return 0;
-	}
-// Read ints from the byte array
-dataPos = *(int*)&(header[0x0A]);
-imageSize = *(int*)&(header[0x22]);
-width = *(int*)&(header[0x12]);
-height = *(int*)&(header[0x16]);
-// Some BMP files are misformatted, guess missing information
-if (imageSize == 0)    imageSize = width*height * 3; // 3 : one byte for each Red, Green and Blue component
-if (dataPos == 0)      dataPos = 54; // The BMP header is done that way
-// Create a buffer
-data = new unsigned char[imageSize];
-// Read the actual data from the file into the buffer
-fread(data, 1, imageSize, file);
-for (int i = 0; i < imageSize; i += 3) swapRB(data[i], data[i + 2]);
-//Everything is in memory now, the file can be closed
-fclose(file);
-return data;
-
-}
 
 int labirinto[hMaze][wMaze]={
 		//Linha 1
@@ -115,12 +69,12 @@ int labirinto[hMaze][wMaze]={
 		//linha 8
 		{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
 		//posicao inicial do boneco
-		{1,1,1,1,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1,3,1,0,0,0,1,1,1,0,0,0,1,3,1,1,1,1,1,1,1,1,1,1,1,3,1,0,0,0,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
+		{1,1,1,1,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1,3,1,0,0,0,1,1,1,0,0,0,1,3,1,1,1,1,1,2,1,1,1,1,1,3,1,0,0,0,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
 		//posicao inicial do boneco
 		{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
 		//linha 9
 		{0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0},
-		{0,0,0,0,0,0,0,0,0,0,0,0,1,2,1,0,0,0,0,0,0,0,0,0,1,3,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,3,1,0,0,0,0,0,0,0,0,0,1,3,1,0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0,0,0,1,5,1,0,0,0,0,0,0,0,0,0,1,3,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,3,1,0,0,0,0,0,0,0,0,0,1,3,1,0,0,0,0,0,0,0,0,0,0,0,0},
 		{0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0},
 		//linha 10
 		{0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
@@ -161,6 +115,7 @@ double angPerspective = 45;
 //double rotX = 0, rotY = 0, rotZ = 0;
 double rotateTORUS = 0;
 double rotateTEAPOT = 0;
+double rotateCUBE = 0;
 int lastMotion = -1;
 double angleRotateRobot = 0;
 double rotateRobot = 0;
@@ -169,14 +124,12 @@ double rotateHead = 0;
 int CAM_ATUAL = CAM_PADRAO;
 bool ROT_ARM_FRONT = true;
 bool ROT_HEAD_RIGHT = true;
-bool ROT_ROBO = false;
 int posRobo[3] = {22,0,0};
-
 double camera[3] = {hMaze/2,wMaze/2,100};
 double focus[3] = {hMaze/2,wMaze/2,0}; // para onde a camera esta olhando
-int rotMaze[3] = {0,0,0};
-double rotateMaze = 0;
-int trMaze[3] = {0,0,0};
+//int rotMaze[3] = {0,0,0};
+//double rotateMaze = 0;
+//int trMaze[3] = {0,0,0};
 
 GLfloat luzAmbiente[4] = { 0.2,0.2,0.2,1.0 };
 GLfloat luzDifusa[4] = { 0.5,0.5,0.5, 1.0 };	   // "cor"
@@ -187,7 +140,6 @@ GLfloat especularidade[4] = { 1.0,1.0,1.0,1.0 };
 GLint especMaterial = 10;
 
 
-
 GLUquadricObj *novaQuadrica();
 void reshapeWindow(GLsizei w, GLsizei h);
 void draw();
@@ -195,7 +147,10 @@ void animate(int value);
 void teclado(unsigned char key, int x, int y);
 void specialKeys(int key, int x, int y);
 void drawMaze( double w, double h);
+void drawTable();
 void drawRobot();
+void swapRB(unsigned char & b, unsigned char & r);
+unsigned char *  loadBMP_custom(const char * filename, unsigned int &width, unsigned int &height);
 
 GLUquadricObj *novaQuadrica(){
 	GLUquadricObj *novaQuadrica = gluNewQuadric();
@@ -209,6 +164,8 @@ GLUquadricObj *neck = novaQuadrica();
 GLUquadricObj *ear = novaQuadrica();
 GLUquadricObj *leg = novaQuadrica();
 GLUquadricObj *arm = novaQuadrica();
+GLUquadricObj *legTable = novaQuadrica();
+GLUquadricObj *tampoTable = novaQuadrica();
 
 void reshapeWindow(GLsizei w, GLsizei h){
 	if(h ==0) h = 1;
@@ -474,11 +431,18 @@ void drawMaze( double w, double h){
 					glTranslatef(i,j,0);
 					glutSolidCube(1);
 				glPopMatrix();
-			}else if(labirinto[i][j] == CONE){ //se for objeto CONE
+			}else if(labirinto[i][j] == MESA){ //se for objeto CONE
 				glPushMatrix();
-					glColor3f(1,0.6,0.5);
-					glTranslatef(i,j,-1.5);
-					glutSolidCone(1,ALTURA_PAREDE,50,50);
+					glColor3f(1,0.75,0.25);
+					glTranslatef(i,j,0);
+					drawTable();
+					glPushMatrix();
+						glColor3f(0.2,0.2,0.2);
+						glTranslatef(0,0,ALTURA_PAREDE/3);
+						glRotatef(90,1,0,0);
+						glRotatef(-45,0,0,1);
+						glutSolidTeapot(0.4);
+					glPopMatrix();
 				glPopMatrix();
 			}else if(labirinto[i][j] == TORUS){ //se for objeto TORUS
 				glPushMatrix();
@@ -496,14 +460,54 @@ void drawMaze( double w, double h){
 					glRotatef(rotateTEAPOT++,0,1,0);
 					glutSolidTeapot(0.75);
 				glPopMatrix();
+			}else if(labirinto[i][j] == OBJS){
+				//desenhar um cubo com uma bola em cima
+				glPushMatrix();
+					glColor3f(0.625,0.625,0.625);
+					glTranslatef(i,j,0);
+					glRotatef(45,0,0,1);
+					glRotatef(rotateCUBE++,0,0,1);
+					glutSolidCube(2);
+					glColor3f(0.625,0.125,0.625);
+					glTranslatef(0,0,2);
+					glutSolidCone(0.75,3,50,50);
+					glColor3f(0.625,0.625,0.125);
+					glTranslatef(0,0,3);
+					glutSolidSphere(0.5, 50,50);
+				glPopMatrix();
 			}
 		}
 	}
 	glPopMatrix();
 };
 
-void drawRobot(){
+void drawTable(){
+	//PERNAS
 	glPushMatrix();
+		glTranslatef(-0.625,0.625,0);
+		gluCylinder(legTable,0.25,0.25,ALTURA_PAREDE/4,50,50);
+	glPopMatrix();
+	glPushMatrix();
+		glTranslatef(0.625,0.625,0);
+		gluCylinder(legTable,0.25,0.25,ALTURA_PAREDE/4,50,50);
+	glPopMatrix();
+	glPushMatrix();
+		glTranslatef(0.625,-0.625,0);
+		gluCylinder(legTable,0.25,0.25,ALTURA_PAREDE/4,50,50);
+	glPopMatrix();
+	glPushMatrix();
+		glTranslatef(-0.625,-0.625,0);
+		gluCylinder(legTable,0.25,0.25,ALTURA_PAREDE/4,50,50);
+	glPopMatrix();
+	//TAMPO DA MESA
+	glPushMatrix();
+		glTranslatef(0,0,ALTURA_PAREDE/4);
+		gluDisk(tampoTable, 0,1.5,50,50);
+	glPopMatrix();
+};
+
+void drawRobot(){
+//	glPushMatrix();
 		glTranslatef(posRobo[X],posRobo[Y],posRobo[Z]);
 		glRotatef(angleRotateRobot,0,0,1);
 		//PERNAS
@@ -590,8 +594,53 @@ void drawRobot(){
 				glutSolidSphere(0.25,50,50);
 			glPopMatrix();
 		glPopMatrix();
-	glPopMatrix();
+//	glPopMatrix();
 };
+
+void swapRB(unsigned char & b, unsigned char & r) {
+	unsigned char x;
+	x = r;
+	r = b;
+	b = x;
+}
+
+unsigned char *  loadBMP_custom(const char * filename, unsigned int &width, unsigned int &height) {
+	// Data read from the header of the BMP file
+	unsigned char header[54]; // Each BMP file begins by a 54-bytes header
+	unsigned int dataPos;     // Position in the file where the actual data begins
+	//unsigned int width, height;
+	unsigned int imageSize;   // = width*height*3
+	// Actual RGB data
+	unsigned char * data;
+	// Open the file
+	FILE * file;
+	file = fopen( filename, "rb");
+	if (!file) { printf("Image could not be opened\n"); return 0; };
+	if (fread(header, 1, 54, file) != 54) { // If not 54 bytes read : problem
+		printf("Not a correct BMP file\n");
+		return 0;
+	}
+	if (header[0] != 'B' || header[1] != 'M') {
+		printf("Not a correct BMP file\n");
+		return 0;
+	}
+	// Read ints from the byte array
+	dataPos = *(int*)&(header[0x0A]);
+	imageSize = *(int*)&(header[0x22]);
+	width = *(int*)&(header[0x12]);
+	height = *(int*)&(header[0x16]);
+	// Some BMP files are misformatted, guess missing information
+	if (imageSize == 0)    imageSize = width*height * 3; // 3 : one byte for each Red, Green and Blue component
+	if (dataPos == 0)      dataPos = 54; // The BMP header is done that way
+	// Create a buffer
+	data = new unsigned char[imageSize];
+	// Read the actual data from the file into the buffer
+	fread(data, 1, imageSize, file);
+	for (int i = 0; i < imageSize; i += 3) swapRB(data[i], data[i + 2]);
+	//Everything is in memory now, the file can be closed
+	fclose(file);
+	return data;
+}
 
 //##########################//
 //			MAIN			//
