@@ -22,8 +22,10 @@
 #define CAM_PADRAO 2
 #define CAM_TRAS 3
 #define CAM_ROBO 4
-#define CIMA 3
-#define BAIXO 4
+#define FRENTE 1
+#define TRAS 2
+#define ESQUERDA 3
+#define DIREITA 4
 
 int labirinto[hMaze][wMaze]={
 		//Linha 1
@@ -165,15 +167,6 @@ void draw(){
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
-	switch(CAM_ATUAL){
-		case CAM_PADRAO: //camera padrao olhando o labirinto de cima
-			gluLookAt(camera[X],camera[Y],camera[Z], focus[X], focus[Y], focus[Z], 0,1,0);
-			break;
-		case CAM_ROBO: //camera que foca o robo
-			gluLookAt(posRobo[X], posRobo[Y]-10, posRobo[Z]+20, posRobo[X], posRobo[Y], posRobo[Z], 0,1,0);
-			break;
-	}
 	// Habilita o modelo de coloriza��o de Gouraud
 	glShadeModel(GL_SMOOTH);
 
@@ -200,6 +193,16 @@ void draw(){
 	// Habilita o depth-buffering
 	glEnable(GL_DEPTH_TEST);
 
+
+	switch(CAM_ATUAL){
+		case CAM_PADRAO: //camera padrao olhando o labirinto de cima
+			gluLookAt(camera[X],camera[Y],camera[Z], focus[X], focus[Y], focus[Z], 0,1,0);
+			break;
+		case CAM_ROBO: //camera que foca o robo
+			gluLookAt(posRobo[X], posRobo[Y]-10, posRobo[Z]+30, posRobo[X], posRobo[Y], posRobo[Z], 0,1,0);
+			break;
+	}
+
 	glColor3f(0.5,0.75,0.25);
 	//rotacoes com o teclado
 	glRotatef(-rotX, 1,0,0);
@@ -212,15 +215,13 @@ void draw(){
 		glVertex3f(hMaze,wMaze,0);
 		glVertex3f(0,wMaze,0);
 	glEnd();
-//	glBegin(GL_QUADS); //PLANO XZ glColor3f(1,1,0.5); glVertex3f(0,0,0); glVertex3f(0,0,10); glVertex3f(10,0,10); glVertex3f(10,0,0);
-//	glEnd();
-//	glBegin(GL_QUADS); //PLANO YZ glColor3f(0.5,0.5,0.5); glVertex3f(0,0,0); glVertex3f(0,10,0); glVertex3f(0,10,10); glVertex3f(0,0,10);
-//	glEnd();
+
 	glColor3f(1,0,0);
 	drawMaze(wMaze, hMaze);
 	drawRobot();
 	glutSwapBuffers();
 	glutPostRedisplay();
+
 	//MOVIMENTOS DA CABEÇA
 	if(ROT_HEAD_RIGHT == true){
 		if(rotateHead < 30){ rotateHead = rotateHead + 1;
@@ -236,6 +237,17 @@ void draw(){
 	}else if(ROT_ARM_FRONT == false){
 		if(rotateArms > -15){ rotateArms = rotateArms - 0.5;
 		}else{ ROT_ARM_FRONT = true; }
+	}
+
+	//ROTACOES DO ROBO
+	if(rotateRobo > 0){
+		if(angleRotateRobot < rotateRobo){
+			angleRotateRobot+=18;
+		}
+	}else if(rotateRobo < 0){
+		if(angleRotateRobot > rotateRobo){
+			angleRotateRobot-=18;
+		}
 	}
 }
 
@@ -277,6 +289,7 @@ void teclado(unsigned char key, int x, int y){
 
 void specialKeys(int key, int x, int y){
 	switch (key) {
+	//CAMERAS
 		case GLUT_KEY_F1:    // F1: Para trocar entre tela cheia e janela
 			fullScreenMode = !fullScreenMode;         // Estado de troca
 			if (fullScreenMode) {                     // Modo tela cheia
@@ -300,10 +313,46 @@ void specialKeys(int key, int x, int y){
 			focus[Z] = 0;
 			break;
 		case GLUT_KEY_F3: //camera padrao
-			CAM_ATUAL = CAM_TRAS;
+//			CAM_ATUAL = CAM_TRAS;
 		case GLUT_KEY_F4: //camera atras do robo estatica olhando o labirinto
 			CAM_ATUAL = CAM_ROBO; //camera atras do robo
 			break;
+	//ROTACOES ROBO COM O MOUSE
+		case GLUT_KEY_UP: //anda pra frente
+			if(posRobo[Y]+2 < wMaze){
+				if(labirinto[posRobo[X]-1][posRobo[Y]+2] && labirinto[posRobo[X]+1][posRobo[Y]+2]){
+					if(lastMotion == FRENTE || lastMotion == -1){
+						//ultimo movimento foi pra frente ou nao teve nenhum movimento ainda
+						lastMotion = FRENTE;
+						posRobo[Y]++;
+					}else if(lastMotion == TRAS){
+						//ROTACIONAR 180
+						lastMotion = FRENTE;
+						rotateRobo = 180;
+					}else if(lastMotion == DIREITA){
+						lastMotion = FRENTE;
+						rotateRobo = 90;
+					}else if(lastMotion == ESQUERDA){
+						lastMotion = FRENTE;
+						rotateRobo = -90;
+					}
+				}
+			}
+			break;
+		case GLUT_KEY_DOWN: //anda pra tras
+			if(posRobo[Y]-2 > 0){
+				if(labirinto[posRobo[X]-1][posRobo[Y]-2] && labirinto[posRobo[X]+1][posRobo[Y]-2]){
+					if(lastMotion == TRAS || lastMotion == -1){
+						//ultimo movimento foi pra frente ou nao teve nenhum movimento ainda
+						lastMotion = TRAS;
+						posRobo[Y]--;
+					}else if(lastMotion == FRENTE){
+						//ROTACIONAR 180
+						lastMotion = TRAS;
+						angleRotateRobot = 180;
+					}
+				}
+			}
 	}
 	glutPostRedisplay();
 }
@@ -349,7 +398,6 @@ void drawMaze( double w, double h){
 };
 
 void drawRobot(){
-	glPushMatrix();
 		glTranslatef(posRobo[X],posRobo[Y],posRobo[Z]);
 		//rotacoes conforme teclado
 		glRotatef(angleRotateRobot,0,0,1);
@@ -383,8 +431,8 @@ void drawRobot(){
 			glRotatef(-4.5,0,1,0);
 			glRotatef(rotateArms, 1,0,0);
 			glRotatef(-180,1,0,0);
-			glScalef(1,2,10);
-			gluCylinder(arm,0.15,0.15, 0.25, 50,50);
+//			glScalef(1,2,10);
+			gluCylinder(arm,0.15,0.15, 2.5, 50,50);
 		glPopMatrix();
 		//BRAÇO ESQUERDO
 		glPushMatrix();
@@ -393,8 +441,8 @@ void drawRobot(){
 			glRotatef(+4.5,0,1,0);
 			glRotatef(-rotateArms, 1,0,0);
 			glRotatef(-180,1,0,0);
-			glScalef(1,2,10);
-			gluCylinder(arm,0.15,0.15, 0.25, 50,50);
+//			glScalef(1,2,10);
+			gluCylinder(arm,0.15,0.15, 2.5, 50,50);
 		glPopMatrix();
 		//PESCOÇO
 		glColor3f(0.25f,0.25f,0.25f);
@@ -439,7 +487,6 @@ void drawRobot(){
 				glutSolidSphere(0.25,50,50);
 			glPopMatrix();
 		glPopMatrix();
-	glPopMatrix();
 };
 
 //##########################//
