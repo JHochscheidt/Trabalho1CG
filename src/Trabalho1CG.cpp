@@ -113,6 +113,7 @@ double rotateHead = 0;
 int CAM_ATUAL = CAM_PADRAO;
 bool ROT_ARM_FRONT = true;
 bool ROT_HEAD_RIGHT = true;
+bool ROT_ROBO = false;
 int posRobo[3] = {22,0,0};
 
 double camera[3] = {hMaze/2,wMaze/2,100};
@@ -288,7 +289,9 @@ void teclado(unsigned char key, int x, int y){
 }
 
 void specialKeys(int key, int x, int y){
+	printf("rotRob %f \n", rotateRobo);
 	switch (key) {
+
 	//CAMERAS
 		case GLUT_KEY_F1:    // F1: Para trocar entre tela cheia e janela
 			fullScreenMode = !fullScreenMode;         // Estado de troca
@@ -321,20 +324,27 @@ void specialKeys(int key, int x, int y){
 		case GLUT_KEY_UP: //anda pra frente
 			if(posRobo[Y]+2 < wMaze){
 				if(labirinto[posRobo[X]-1][posRobo[Y]+2] && labirinto[posRobo[X]+1][posRobo[Y]+2]){
+					if(angleRotateRobot != 0)
+						angleRotateRobot = 0;
 					if(lastMotion == FRENTE || lastMotion == -1){
 						//ultimo movimento foi pra frente ou nao teve nenhum movimento ainda
 						lastMotion = FRENTE;
 						posRobo[Y]++;
+						rotateRobo = 0;
+						ROT_ROBO = false;
 					}else if(lastMotion == TRAS){
 						//ROTACIONAR 180
 						lastMotion = FRENTE;
 						rotateRobo = 180;
+						ROT_ROBO = true;
 					}else if(lastMotion == DIREITA){
 						lastMotion = FRENTE;
 						rotateRobo = 90;
+						ROT_ROBO = true;
 					}else if(lastMotion == ESQUERDA){
 						lastMotion = FRENTE;
 						rotateRobo = -90;
+						ROT_ROBO = true;
 					}
 				}
 			}
@@ -342,14 +352,27 @@ void specialKeys(int key, int x, int y){
 		case GLUT_KEY_DOWN: //anda pra tras
 			if(posRobo[Y]-2 > 0){
 				if(labirinto[posRobo[X]-1][posRobo[Y]-2] && labirinto[posRobo[X]+1][posRobo[Y]-2]){
+					if(angleRotateRobot != 0)
+						angleRotateRobot = 0;
 					if(lastMotion == TRAS || lastMotion == -1){
 						//ultimo movimento foi pra frente ou nao teve nenhum movimento ainda
 						lastMotion = TRAS;
 						posRobo[Y]--;
+						rotateRobo = 0;
+						ROT_ROBO = false;
 					}else if(lastMotion == FRENTE){
 						//ROTACIONAR 180
 						lastMotion = TRAS;
-						angleRotateRobot = 180;
+						rotateRobo = 180;
+						ROT_ROBO = true;
+					}else if(lastMotion == DIREITA){
+						lastMotion = TRAS;
+						rotateRobo = -90;
+						ROT_ROBO = true;
+					}else if(lastMotion == ESQUERDA){
+						lastMotion = TRAS;
+						rotateRobo = 90;
+						ROT_ROBO = true;
 					}
 				}
 			}
@@ -398,9 +421,11 @@ void drawMaze( double w, double h){
 };
 
 void drawRobot(){
+	glPushMatrix();
 		glTranslatef(posRobo[X],posRobo[Y],posRobo[Z]);
-		//rotacoes conforme teclado
-		glRotatef(angleRotateRobot,0,0,1);
+		if(ROT_ROBO == true){
+			glRotatef(angleRotateRobot,0,0,1);
+		}
 		//PERNAS
 		glColor3f(0.4f,0.4f,0.4f);
 		glPushMatrix();
@@ -487,6 +512,7 @@ void drawRobot(){
 				glutSolidSphere(0.25,50,50);
 			glPopMatrix();
 		glPopMatrix();
+	glPopMatrix();
 };
 
 //##########################//
