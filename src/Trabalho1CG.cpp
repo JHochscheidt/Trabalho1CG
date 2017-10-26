@@ -24,6 +24,62 @@
 #define CIMA 3
 #define BAIXO 4
 
+GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };
+GLfloat mat_shininess[] = { 50.0 };
+GLfloat mat_amarelo[] = {0.8, 0.8, 0.1, 1.0};
+GLfloat mat_verde[] = { 0.1, 0.6, 0.1, 1.0 };
+GLfloat mat_vermelho[] = { 0.7, 0.1, 0.1, 1.0 };
+GLfloat light_position[] = { 0.0, 500.0, 0.0, 1.0 };
+GLfloat luz_branca[] = {1.0,1.0,1.0,1.0};
+GLfloat lmodel_ambient[] = {0.6,0.6,0.6,1.0};
+GLuint chaoid, paredeid;
+
+void swapRB(unsigned char & b, unsigned char & r) {
+	unsigned char x;
+	x = r;
+	r = b;
+	b = x;
+}
+
+unsigned char *  loadBMP_custom(const char * filename, unsigned int &width, unsigned int &height) {
+// Data read from the header of the BMP file
+unsigned char header[54]; // Each BMP file begins by a 54-bytes header
+unsigned int dataPos;     // Position in the file where the actual data begins
+//unsigned int width, height;
+unsigned int imageSize;   // = width*height*3
+// Actual RGB data
+unsigned char * data;
+// Open the file
+FILE * file;
+file = fopen( filename, "rb");
+if (!file) { printf("Image could not be opened\n"); return 0; };
+if (fread(header, 1, 54, file) != 54) { // If not 54 bytes read : problem
+	printf("Not a correct BMP file\n");
+	return 0;
+}
+if (header[0] != 'B' || header[1] != 'M') {
+	printf("Not a correct BMP file\n");
+	return 0;
+	}
+// Read ints from the byte array
+dataPos = *(int*)&(header[0x0A]);
+imageSize = *(int*)&(header[0x22]);
+width = *(int*)&(header[0x12]);
+height = *(int*)&(header[0x16]);
+// Some BMP files are misformatted, guess missing information
+if (imageSize == 0)    imageSize = width*height * 3; // 3 : one byte for each Red, Green and Blue component
+if (dataPos == 0)      dataPos = 54; // The BMP header is done that way
+// Create a buffer
+data = new unsigned char[imageSize];
+// Read the actual data from the file into the buffer
+fread(data, 1, imageSize, file);
+for (int i = 0; i < imageSize; i += 3) swapRB(data[i], data[i + 2]);
+//Everything is in memory now, the file can be closed
+fclose(file);
+return data;
+
+}
+
 int labirinto[hMaze][wMaze]={
 		//Linha 1
 		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -208,13 +264,23 @@ void draw(){
 	glRotatef(-rotY, 0,1,0);
 	glRotatef(-rotZ, 0,0,1);
 
-
+	//textura
+	unsigned int ih=0, iw=0;
+	unsigned char * chao = NULL;
+	glShadeModel(GL_SMOOTH);
 
 	//CHAO PLANO XY
+	glEnable(GL_TEXTURE_2D);
 	glBegin(GL_QUADS);
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, chaoid);
+		glTexCoord2f(0.0f, 0.0f);
 		glVertex3f(0,0,0);
+		glTexCoord2f(1.0f, 0.0f);
 		glVertex3f(hMaze,0,0);
+		glTexCoord2f(1.0f, 1.0f);
 		glVertex3f(hMaze,wMaze,0);
+		glTexCoord2f(0.0f, 1.0f);
 		glVertex3f(0,wMaze,0);
 	glEnd();
 	glBegin(GL_QUADS); //PLANO XZ
@@ -230,8 +296,9 @@ void draw(){
 		glVertex3f(0,10,0);
 		glVertex3f(0,10,10);
 		glVertex3f(0,0,10);
-
 	glEnd();
+	//draw();
+	glDisable(GL_TEXTURE_2D);
 
 
 	//LABIRINTO
@@ -276,6 +343,19 @@ void draw(){
 			ROT_ARM_FRONT = true;
 		}
 	}
+
+	chao = loadBMP_custom("floor.bmp", iw, ih);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glGenTextures(1, &chaoid);
+	glBindTexture (GL_TEXTURE_2D,chaoid);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, iw, ih, 0,GL_RGB, GL_UNSIGNED_BYTE, chao);
+	gluBuild2DMipmaps(chaoid, GL_RGB, iw, ih, GL_RGB, GL_UNSIGNED_BYTE, chao);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
 }
 
@@ -491,7 +571,7 @@ void drawMaze( double w, double h){
 			if(labirinto[i][j] == 0){
 				//desenhar parede
 				glPushMatrix();
-					glColor3f(1,0,0);
+					glColor3f(0.5f, 0.35f, 0.05f);
 					glScalef(1,1,ALTURA_PAREDE);
 					glTranslatef(i,j,0);
 					glutSolidCube(1);
