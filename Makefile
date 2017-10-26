@@ -1,11 +1,11 @@
 # Main compiler
 CC := g++
 # diretorio do source
-SRCDIR := src
+SRCDIR := .
 # diretorio dos arquivos objeto
-BUILDDIR := build
+BUILDDIR := .
 #diretorio do executavel
-TARGET := bin/Main
+TARGET := Main
 
 # extensao dos fontes
 SRCEXT := cpp
