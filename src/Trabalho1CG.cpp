@@ -90,7 +90,7 @@ int labirinto[hMaze][wMaze]={
 		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 		//linha 2
 		{0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
-		{0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
+		{0,0,0,1,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,3,1,0,0,0,1,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,3,1,0,0,0},
 		{0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
 		//linha 3
 		{0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0},
@@ -98,15 +98,15 @@ int labirinto[hMaze][wMaze]={
 		{0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0},
 		//linha 4
 		{0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
-		{0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
+		{0,0,0,1,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,3,1,0,0,0},
 		{0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
 		//linha 5
 		{0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0},
-		{0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0,0,0,1,3,1,0,0,0,0,0,0,0,0,0,0,0,0,1,3,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,3,1,0,0,0,0,0,0,0,0,0,0,0,0,1,3,1,0,0,0,0,0,0,0,0,0,0,0,0},
 		{0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0},
 		//linha 6
 		{0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
-		{0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
+		{0,0,0,1,1,1,1,3,1,1,1,1,1,1,1,0,0,0,1,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,3,1,0,0,0,1,1,1,1,1,1,1,3,1,1,1,1,0,0,0},
 		{0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
 		//linha 7
 		{0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -115,24 +115,24 @@ int labirinto[hMaze][wMaze]={
 		//linha 8
 		{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
 		//posicao inicial do boneco
-		{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
+		{1,1,1,1,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1,3,1,0,0,0,1,1,1,0,0,0,1,3,1,1,1,1,1,1,1,1,1,1,1,3,1,0,0,0,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
 		//posicao inicial do boneco
 		{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
 		//linha 9
 		{0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0},
-		{0,0,0,0,0,0,0,0,0,0,0,0,1,2,1,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0,0,0,1,2,1,0,0,0,0,0,0,0,0,0,1,3,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,3,1,0,0,0,0,0,0,0,0,0,1,3,1,0,0,0,0,0,0,0,0,0,0,0,0},
 		{0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0},
 		//linha 10
 		{0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
-		{0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
+		{0,0,0,1,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1,3,1,1,1,1,0,0,0},
 		{0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
 		//linha 11
 		{0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0},
-		{0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0},
+		{0,0,0,1,3,1,0,0,0,0,0,0,0,0,0,0,0,0,1,3,1,0,0,0,1,3,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,3,1,0,0,0,1,3,1,0,0,0,0,0,0,0,0,0,0,0,0,1,3,1,0,0,0},
 		{0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0},
 		//linha 12
 		{0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
-		{0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
+		{0,0,0,1,3,1,1,1,1,1,1,1,1,3,1,0,0,0,1,1,1,0,0,0,1,3,1,1,1,1,1,1,1,1,3,1,0,0,0,1,3,1,1,1,1,1,1,1,1,3,1,0,0,0,1,1,1,0,0,0,1,3,1,1,1,1,1,1,1,1,3,1,0,0,0},
 		{0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
 		//linha 13
 		{0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -140,11 +140,11 @@ int labirinto[hMaze][wMaze]={
 		{0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0},
 		//linha 14
 		{0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
-		{0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,4,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
+		{0,0,0,1,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,3,1,0,0,0,1,3,1,1,1,1,1,1,1,1,1,1,1,3,1,1,1,1,1,4,1,1,1,1,1,1,1,1,1,1,1,3,1,0,0,0},
 		{0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
 		//linha 15
 		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0},
-		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,3,1,0,0,0},
 		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0}
 };
 
@@ -177,6 +177,17 @@ double focus[3] = {hMaze/2,wMaze/2,0}; // para onde a camera esta olhando
 int rotMaze[3] = {0,0,0};
 double rotateMaze = 0;
 int trMaze[3] = {0,0,0};
+
+GLfloat luzAmbiente[4] = { 0.2,0.2,0.2,1.0 };
+GLfloat luzDifusa[4] = { 0.5,0.5,0.5, 1.0 };	   // "cor"
+GLfloat luzEspecular[4] = { 0.7,0.7,0.7, 1.0 };// "brilho"
+GLfloat posicaoLuz[4] = { 0.0, 50.0, 50.0, 1.0 };
+// Capacidade de brilho do material
+GLfloat especularidade[4] = { 1.0,1.0,1.0,1.0 };
+GLint especMaterial = 10;
+
+
+
 GLUquadricObj *novaQuadrica();
 void reshapeWindow(GLsizei w, GLsizei h);
 void draw();
@@ -212,13 +223,7 @@ void reshapeWindow(GLsizei w, GLsizei h){
 void draw(){
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-	GLfloat luzAmbiente[4] = { 0.2,0.2,0.2,1.0 };
-	GLfloat luzDifusa[4] = { 0.5,0.5,0.5, 1.0 };	   // "cor"
-	GLfloat luzEspecular[4] = { 0.7,0.7,0.7, 1.0 };// "brilho"
-	GLfloat posicaoLuz[4] = { 0.0, 50.0, 50.0, 1.0 };
-	// Capacidade de brilho do material
-	GLfloat especularidade[4] = { 1.0,1.0,1.0,1.0 };
-	GLint especMaterial = 10;
+
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	// Habilita o modelo de coloriza��o de Gouraud
@@ -234,14 +239,6 @@ void draw(){
 	glLightfv(GL_LIGHT1, GL_DIFFUSE, luzDifusa);
 	glLightfv(GL_LIGHT1, GL_SPECULAR, luzEspecular);
 	glLightfv(GL_LIGHT1, GL_POSITION, posicaoLuz);
-	// Habilita a defini��o da cor do material a partir da cor corrente
-	glEnable(GL_COLOR_MATERIAL);
-	//Habilita o uso de ilumina��o
-	glEnable(GL_LIGHTING);
-	// Habilita a luz de n�mero 0
-	glEnable(GL_LIGHT1);
-	// Habilita o depth-buffering
-//	glEnable(GL_DEPTH_TEST);
 
 	switch (CAM_ATUAL){
 	case CAM_PADRAO: //camera padrao olhando o labirinto de cima
@@ -291,7 +288,6 @@ void draw(){
 	drawRobot();
 	glutSwapBuffers();
 
-
 	//MOVIMENTOS DA CABEÇA
 	if(ROT_HEAD_RIGHT == true){
 		if(rotateHead < 30){ rotateHead = rotateHead + 1;
@@ -308,21 +304,18 @@ void draw(){
 		if(rotateArms > -15){ rotateArms = rotateArms - 0.5;
 		}else{ ROT_ARM_FRONT = true; }
 	}
-
 	//MOVIMENTO DO ROBO COM O TECLADO
-//	printf("A %f\n", angleRotateRobot);
-//		printf("R %f\n", rotateRobot);
 	if(angleRotateRobot < rotateRobot){
-		angleRotateRobot+=6;
+		angleRotateRobot+=9;
 	}else if(angleRotateRobot > rotateRobot){
-		angleRotateRobot-=6;
+		angleRotateRobot-=9;
 	}
 }
 
 void animate(int value){
 	glutPostRedisplay();
 	draw();
-	glutTimerFunc(60,animate,1);
+	glutTimerFunc(30,animate,1);
 }
 
 void teclado(unsigned char key, int x, int y){
@@ -335,7 +328,7 @@ void teclado(unsigned char key, int x, int y){
 			break;
 		case '-': //zoom in
 			if(CAM_ATUAL == CAM_PADRAO){
-				printf("Z%f Y%f\n", camera[Z], camera[Y]);
+				("Z%f Y%f\n", camera[Z], camera[Y]);
 				if(camera[Y] > -30){
 					camera[Z]-=0.5;
 					camera[Y]--;
@@ -344,7 +337,7 @@ void teclado(unsigned char key, int x, int y){
 			break;
 		case '+': //zoom out
 			if(CAM_ATUAL == CAM_PADRAO){
-				printf("Z%f Y%f\n", camera[Z], camera[Y]);
+				("Z%f Y%f\n", camera[Z], camera[Y]);
 				if(camera[Z] < 100){
 					camera[Z]+=0.5;
 					camera[Y]++;
@@ -352,7 +345,6 @@ void teclado(unsigned char key, int x, int y){
 			}
 			break;
 	}
-//	glutPostRedisplay();
 }
 
 void specialKeys(int key, int x, int y){
@@ -384,69 +376,88 @@ void specialKeys(int key, int x, int y){
 			break;
 		case GLUT_KEY_UP: //anda pra frente
 			if(posRobo[Y]+2 < wMaze){
-				if(labirinto[posRobo[X]][posRobo[Y]+2] == 1 && labirinto[posRobo[X]-1][posRobo[Y]+2] == 1 && labirinto[posRobo[X]+1][posRobo[Y]+2] == 1){
-					//se ele pode andar pra frente
-					if(lastMotion != FRENTE){
-						rotateRobot = 0;
-						ROT_ROBO = true;
-					}else{
-						posRobo[Y]++;
-						ROT_ROBO = false;
+				if(labirinto[posRobo[X]][posRobo[Y]+2] == 1){
+					if(labirinto[posRobo[X]-1][posRobo[Y]+2] == 1 && labirinto[posRobo[X]+1][posRobo[Y]+2] == 1){
+						//se ele pode andar pra frente
+						if(lastMotion != FRENTE){
+							rotateRobot = 0;
+						}else{
+							posRobo[Y]++;
+						}
+						lastMotion = FRENTE;
 					}
+				}else if(labirinto[posRobo[X]][posRobo[Y]+2] == TORUS){
+					labirinto[posRobo[X]][posRobo[Y]+2] = 1;
+					posRobo[Y]++;
 					lastMotion = FRENTE;
 				}
 			}
 			break;
 		case GLUT_KEY_DOWN: //anda pra tras
 			if(posRobo[Y]-2 > 0){
-				if(labirinto[posRobo[X]][posRobo[Y]-2] == 1 && labirinto[posRobo[X]-1][posRobo[Y]-2] == 1 && labirinto[posRobo[X]+1][posRobo[Y]-2] == 1){
-					// pode andar pra tras
-					if(lastMotion != TRAS){
-						if(lastMotion == DIREITA){
-							rotateRobot = -180;
+				if(labirinto[posRobo[X]][posRobo[Y]-2] == 1){
+					if(labirinto[posRobo[X]-1][posRobo[Y]-2] == 1 && labirinto[posRobo[X]+1][posRobo[Y]-2] == 1){
+						// pode andar pra tras
+						if(lastMotion != TRAS){
+							if(lastMotion == DIREITA){
+								rotateRobot = -180;
+							}else{
+								rotateRobot = 180;
+							}
 						}else{
-							rotateRobot = 180;
+							posRobo[Y]--;
 						}
-						ROT_ROBO = true;
-					}else{
-						posRobo[Y]--;
-						ROT_ROBO = false;
+						lastMotion = TRAS;
 					}
+				}else if(labirinto[posRobo[X]][posRobo[Y]-2] == TORUS){
+					labirinto[posRobo[X]][posRobo[Y]-2] = 1;
+					posRobo[Y]--;
 					lastMotion = TRAS;
 				}
 			}
 			break;
 		case GLUT_KEY_LEFT: //anda pra esquerda
 			if(posRobo[X]-2 > 0){
-				if(labirinto[posRobo[X]-2][posRobo[Y]] == 1 && labirinto[posRobo[X]-2][posRobo[Y]-1] == 1 && labirinto[posRobo[X]-2][posRobo[Y]+1] == 1){
-					//pode andar pra esquerda
-					if(lastMotion != ESQUERDA){
-						if(angleRotateRobot == -180)
-							angleRotateRobot = 180;
-						rotateRobot = 90;
-					}else{
-						posRobo[X]--;
+				if(labirinto[posRobo[X]-2][posRobo[Y]] == 1){
+					if(labirinto[posRobo[X]-2][posRobo[Y]-1] == 1 && labirinto[posRobo[X]-2][posRobo[Y]+1] == 1){
+						//pode andar pra esquerda
+						if(lastMotion != ESQUERDA){
+							if(angleRotateRobot == -180)
+								angleRotateRobot = 180;
+							rotateRobot = 90;
+						}else{
+							posRobo[X]--;
+						}
+						lastMotion = ESQUERDA;
 					}
+				}else if(labirinto[posRobo[X]-2][posRobo[Y]] == TORUS){
+					labirinto[posRobo[X]-2][posRobo[Y]] = 1;
+					posRobo[X]--;
 					lastMotion = ESQUERDA;
 				}
 			}
 			break;
 		case GLUT_KEY_RIGHT: //anda pra direita
 			if(posRobo[X]+2 < hMaze){
-				if(labirinto[posRobo[X]+2][posRobo[Y]] == 1 && labirinto[posRobo[X]+2][posRobo[Y]-1] == 1 && labirinto[posRobo[X]+2][posRobo[Y]+1] == 1){
-					//pode andar pra direita
-					if(lastMotion != DIREITA){
-						if(angleRotateRobot == 180)
-							angleRotateRobot = -180;
-						rotateRobot = -90;
-						ROT_ROBO = true;
-					}else{
-						posRobo[X]++;
-						ROT_ROBO = false;
+				if(labirinto[posRobo[X]+2][posRobo[Y]] == 1 ){
+					if(labirinto[posRobo[X]+2][posRobo[Y]-1] == 1 && labirinto[posRobo[X]+2][posRobo[Y]+1] == 1){
+						//pode andar pra direita
+						if(lastMotion != DIREITA){
+							if(angleRotateRobot == 180)
+								angleRotateRobot = -180;
+							rotateRobot = -90;
+						}else{
+							posRobo[X]++;
+						}
+						lastMotion = DIREITA;
 					}
+				}else if(labirinto[posRobo[X]+2][posRobo[Y]] == TORUS){
+					labirinto[posRobo[X]+2][posRobo[Y]] = 1;
+					posRobo[X]++;
 					lastMotion = DIREITA;
 				}
 			}
+			break;
 	}
 //	glutPostRedisplay();
 }
@@ -474,7 +485,7 @@ void drawMaze( double w, double h){
 					glColor3f(1,1,0);
 					glTranslatef(i,j,0);
 					glRotatef(90,0,1,0);
-					glRotatef(rotateTORUS++,1,0,0);
+					glRotatef(rotateTORUS+=0.125,1,0,0);
 					glutSolidTorus(0.3, 0.7,50,50);
 				glPopMatrix();
 			}else if(labirinto[i][j] == TEAPOT){ //se for objeto CHALEIRA
@@ -495,7 +506,6 @@ void drawRobot(){
 	glPushMatrix();
 		glTranslatef(posRobo[X],posRobo[Y],posRobo[Z]);
 		glRotatef(angleRotateRobot,0,0,1);
-
 		//PERNAS
 		glColor3f(0.4f,0.4f,0.4f);
 		glPushMatrix();
@@ -595,6 +605,14 @@ int main(int argc, char **argv) {
 	glClearColor(0,0,0,1);
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
+	// Habilita a definição da cor do material a partir da cor corrente
+	glEnable(GL_COLOR_MATERIAL);
+	//Habilita o uso de iluminação
+	glEnable(GL_LIGHTING);
+	// Habilita a luz de numero 0
+	glEnable(GL_LIGHT1);
+
+
 	//FUNCOES DE CALLBACK
 	glutReshapeFunc(reshapeWindow);
 	glutTimerFunc(45, animate, 1);
