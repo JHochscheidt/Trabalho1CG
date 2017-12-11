@@ -7,6 +7,8 @@
 
 #include <GL/glut.h>
 #include <stdio.h>
+#include <math.h>
+
 
 #define wMaze 75
 #define hMaze 45
@@ -16,7 +18,7 @@
 #define MESA 2
 #define TORUS 3
 #define OBJS 5
-#define ALTURA_PAREDE 12
+#define ALTURA_PAREDE 10
 #define TEAPOT 4
 #define CAM_PADRAO 2
 #define CAM_ROBO 4
@@ -24,16 +26,17 @@
 #define TRAS 2
 #define ESQUERDA 3
 #define DIREITA 4
+#define CHAO 1
 
-GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };
 GLfloat mat_shininess[] = { 50.0 };
-GLfloat mat_amarelo[] = {0.8, 0.8, 0.1, 1.0};
-GLfloat mat_verde[] = { 0.1, 0.6, 0.1, 1.0 };
-GLfloat mat_vermelho[] = { 0.7, 0.1, 0.1, 1.0 };
-GLfloat light_position[] = { 0.0, 500.0, 0.0, 1.0 };
-GLfloat luz_branca[] = {1.0,1.0,1.0,1.0};
-GLfloat lmodel_ambient[] = {0.6,0.6,0.6,1.0};
-GLuint chaoid;
+GLfloat light_position[] = { 0, 1000.0, 0, 1.0 };
+GLfloat light_position2[] = {2100, 1000.0, 2100, 1.0 };
+GLfloat luzDifusa[4] = { 0.7,0.7,0.7,1.0 };	   // "cor"
+GLfloat luzEspecular[4] = { 0.7,0.7,0.7,1.0 };
+GLfloat lmodel_ambient[] = {1,1,1,1.0};
+
+
+GLuint chaoid,paredeid;
 
 int labirinto[hMaze][wMaze]={
 		//Linha 1
@@ -126,13 +129,13 @@ int posRobo[3] = {22,0,0};
 double camera[3] = {hMaze/2,wMaze/2,100};
 double focus[3] = {hMaze/2,wMaze/2,0}; // para onde a camera esta olhando
 
-GLfloat luzAmbiente[4] = { 0.2,0.2,0.2,1.0 };
+/*GLfloat luzAmbiente[4] = { 0.2,0.2,0.2,1.0 };
 GLfloat luzDifusa[4] = { 0.5,0.5,0.5, 1.0 };	   // "cor"
 GLfloat luzEspecular[4] = { 0.7,0.7,0.7, 1.0 };// "brilho"
 GLfloat posicaoLuz[4] = { 0.0, 50.0, 50.0, 1.0 };
 // Capacidade de brilho do material
 GLfloat especularidade[4] = { 1.0,1.0,1.0,1.0 };
-GLint especMaterial = 10;
+GLint especMaterial = 10;*/
 
 
 GLUquadricObj *novaQuadrica();
@@ -144,8 +147,7 @@ void specialKeys(int key, int x, int y);
 void drawMaze( double w, double h);
 void drawTable();
 void drawRobot();
-void swapRB(unsigned char & b, unsigned char & r);
-unsigned char *  loadBMP_custom(const char * filename, unsigned int &width, unsigned int &height);
+
 
 GLUquadricObj *novaQuadrica(){
 	GLUquadricObj *novaQuadrica = gluNewQuadric();
@@ -162,6 +164,51 @@ GLUquadricObj *arm = novaQuadrica();
 GLUquadricObj *legTable = novaQuadrica();
 GLUquadricObj *tampoTable = novaQuadrica();
 
+void swapRB(unsigned char & b, unsigned char & r) {
+	unsigned char x;
+	x = r;
+	r = b;
+	b = x;
+}
+
+unsigned char *  loadBMP_custom(const char * filename, unsigned int &width, unsigned int &height) {
+	// Data read from the header of the BMP file
+	unsigned char header[54]; // Each BMP file begins by a 54-bytes header
+	unsigned int dataPos;     // Position in the file where the actual data begins
+	//unsigned int width, height;
+	unsigned int imageSize;   // = width*height*3
+	// Actual RGB data
+	unsigned char * data;
+	// Open the file
+	FILE * file;
+	file = fopen( filename, "rb");
+	if (!file) { printf("Image could not be opened\n"); return 0; };
+	if (fread(header, 1, 54, file) != 54) { // If not 54 bytes read : problem
+		printf("Not a correct BMP file\n");
+		return 0;
+	}
+	if (header[0] != 'B' || header[1] != 'M') {
+		printf("Not a correct BMP file\n");
+		return 0;
+	}
+	// Read ints from the byte array
+	dataPos = *(int*)&(header[0x0A]);
+	imageSize = *(int*)&(header[0x22]);
+	width = *(int*)&(header[0x12]);
+	height = *(int*)&(header[0x16]);
+	// Some BMP files are misformatted, guess missing information
+	if (imageSize == 0)    imageSize = width*height * 3; // 3 : one byte for each Red, Green and Blue component
+	if (dataPos == 0)      dataPos = 54; // The BMP header is done that way
+	// Create a buffer
+	data = new unsigned char[imageSize];
+	// Read the actual data from the file into the buffer
+	fread(data, 1, imageSize, file);
+	for (unsigned int i = 0; i < imageSize; i += 3) swapRB(data[i], data[i + 2]);
+	//Everything is in memory now, the file can be closed
+	fclose(file);
+	return data;
+}
+
 void reshapeWindow(GLsizei w, GLsizei h){
 	if(h ==0) h = 1;
 	glViewport(0,0,w,h);
@@ -172,6 +219,71 @@ void reshapeWindow(GLsizei w, GLsizei h){
 	gluPerspective(45, w/h, 0.1, 300);
 }
 
+GLfloat v[8][3] = { {-1,-1,-1}, {1,-1,-1}, {1,1,-1}, {-1,1,-1},
+					{1,-1,1}, {-1,-1,1}, {-1,1,1}, {1,1,1}};
+
+void cubo(){
+	glBegin(GL_QUADS);
+    glPushMatrix();
+		glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, lmodel_ambient);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, luzEspecular);
+	glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+	glTexCoord2f(0.0f, 0.0f);
+	glVertex3fv(v[0]);
+	glTexCoord2f(1.0f, 0.0f);
+	glVertex3fv(v[1]);
+	glTexCoord2f(1.0f, 1.0f);
+	glVertex3fv(v[2]);
+	glTexCoord2f(0.0f, 1.0f);
+	glVertex3fv(v[3]);
+
+	glTexCoord2f(0.0f, 0.0f);
+	glVertex3fv(v[4]);
+	glTexCoord2f(1.0f, 0.0f);
+	glVertex3fv(v[5]);
+	glTexCoord2f(1.0f, 1.0f);
+	glVertex3fv(v[6]);
+	glTexCoord2f(0.0f, 1.0f);
+	glVertex3fv(v[7]);
+
+	glTexCoord2f(0.0f, 0.0f);
+	glVertex3fv(v[0]);
+	glTexCoord2f(1.0f, 0.0f);
+	glVertex3fv(v[3]);
+	glTexCoord2f(1.0f, 1.0f);
+	glVertex3fv(v[6]);
+	glTexCoord2f(0.0f, 1.0f);
+	glVertex3fv(v[5]);
+
+	glTexCoord2f(0.0f, 0.0f);
+	glVertex3fv(v[3]);
+	glTexCoord2f(1.0f, 0.0f);
+	glVertex3fv(v[2]);
+	glTexCoord2f(1.0f, 1.0f);
+	glVertex3fv(v[7]);
+	glTexCoord2f(0.0f, 1.0f);
+	glVertex3fv(v[6]);
+
+	glTexCoord2f(0.0f, 0.0f);
+	glVertex3fv(v[1]);
+	glTexCoord2f(1.0f, 0.0f);
+	glVertex3fv(v[4]);
+	glTexCoord2f(1.0f, 1.0f);
+	glVertex3fv(v[7]);
+	glTexCoord2f(0.0f, 1.0f);
+	glVertex3fv(v[2]);
+
+	glTexCoord2f(0.0f, 0.0f);
+	glVertex3fv(v[1]);
+	glTexCoord2f(1.0f, 0.0f);
+	glVertex3fv(v[0]);
+	glTexCoord2f(1.0f, 1.0f);
+	glVertex3fv(v[5]);
+	glTexCoord2f(0.0f, 1.0f);
+	glVertex3fv(v[4]);
+    glPopMatrix();
+	glEnd();
+}
 void draw(){
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -180,17 +292,33 @@ void draw(){
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	// Habilita o modelo de colorizacao de Gouraud
 	glShadeModel(GL_SMOOTH);
+	glDisable(GL_BLEND);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    glEnable(GL_LIGHT1);
+    glEnable(GL_NORMALIZE);
 	// Define a refletencia do material
-	glMaterialfv(GL_FRONT, GL_SPECULAR, especularidade);
+	//glMaterialfv(GL_FRONT, GL_SPECULAR, especularidade);
 	// Define a concentracao do brilho
-	glMateriali(GL_FRONT, GL_SHININESS, especMaterial);
+	//glMateriali(GL_FRONT, GL_SHININESS, especMaterial);
 	// Ativa o uso da luz ambiente
-	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, luzAmbiente);
+	//glLightModelfv(GL_LIGHT_MODEL_AMBIENT, luzAmbiente);
 	// Define os parametros da luz de numero 0
-	glLightfv(GL_LIGHT1, GL_AMBIENT, luzAmbiente);
+	/*glLightfv(GL_LIGHT1, GL_AMBIENT, luzAmbiente);
 	glLightfv(GL_LIGHT1, GL_DIFFUSE, luzDifusa);
 	glLightfv(GL_LIGHT1, GL_SPECULAR, luzEspecular);
-	glLightfv(GL_LIGHT1, GL_POSITION, posicaoLuz);
+	glLightfv(GL_LIGHT1, GL_POSITION, posicaoLuz);*/
+
+	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+  glLightfv(GL_LIGHT0, GL_DIFFUSE, luzDifusa);
+  glLightfv(GL_LIGHT0, GL_SPECULAR, luzEspecular);
+
+
+  glLightfv(GL_LIGHT1, GL_POSITION,  light_position2);
+  glLightfv(GL_LIGHT1, GL_DIFFUSE, luzDifusa);
+  glLightfv(GL_LIGHT1, GL_SPECULAR, luzEspecular);
+
+	 glLightModelfv(GL_LIGHT_MODEL_AMBIENT, lmodel_ambient);
 
 	switch (CAM_ATUAL){
 	case CAM_PADRAO: //camera padrao olhando o labirinto de cima
@@ -203,37 +331,22 @@ void draw(){
 
 	glColor3f(0.5,0.75,0.25);
 
-	//textura
-	unsigned int ih=0, iw=0;
-	glShadeModel(GL_SMOOTH);
 	//CHAO
-	glEnable(GL_TEXTURE_2D);
-	glBegin(GL_QUADS);
+	/*glPushMatrix();
+	glScalef(1,1,ALTURA_PAREDE/2);
+
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, chaoid);
-		glTexCoord2f(0.0f, 0.0f);
-		glVertex3f(0,0,0);
-		glTexCoord2f(1.0f, 0.0f);
-		glVertex3f(hMaze,0,0);
-		glTexCoord2f(1.0f, 1.0f);
-		glVertex3f(hMaze,wMaze,0);
-		glTexCoord2f(0.0f, 1.0f);
-		glVertex3f(0,wMaze,0);
-	glEnd();
+		glTranslatef(1,1,1);
+		cubo();
 	glDisable(GL_TEXTURE_2D);
-	unsigned char * chao = NULL;
-	chao = loadBMP_custom("floor.bmp", iw, ih);
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	glGenTextures(1, &chaoid);
-	 glBindTexture (GL_TEXTURE_2D,chaoid);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, iw, ih, 0,GL_RGB, GL_UNSIGNED_BYTE, chao);
-	gluBuild2DMipmaps(chaoid, GL_RGB, iw, ih, GL_RGB, GL_UNSIGNED_BYTE, chao);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+	glPopMatrix();
+	glEnd();*/
+
+	glDisable(GL_LIGHTING);
+	glDisable(GL_LIGHT0);
+	glDisable(GL_LIGHT1);
+	glDisable(GL_NORMALIZE);
 
 	glColor3f(1,0,0);
 	drawMaze(wMaze, hMaze);
@@ -412,6 +525,7 @@ void specialKeys(int key, int x, int y){
 //	glutPostRedisplay();
 }
 
+
 void drawMaze( double w, double h){
 	glPushMatrix();
 	glTranslatef(0,0,1.5);
@@ -419,10 +533,23 @@ void drawMaze( double w, double h){
 		for(int j = 0; j < w; j++){
 			if(labirinto[i][j] == 0){ //se posicao do labirinto for uma parede
 				glPushMatrix();
-					glColor3f(0.5f, 0.35f, 0.05f);
+					glColor3f(1.0f, 1.0f, 1.0f);
 					glScalef(1,1,ALTURA_PAREDE);
+					glEnable(GL_TEXTURE_2D);
+					glBindTexture(GL_TEXTURE_2D, paredeid);
 					glTranslatef(i,j,0);
-					glutSolidCube(1);
+					cubo();
+					glDisable(GL_TEXTURE_2D);
+				glPopMatrix();
+			}else if(labirinto[i][j] == CHAO){
+				glPushMatrix();
+				glColor3f(1.0f, 1.0f, 1.0f);
+					glScalef(1,1,0);
+					glEnable(GL_TEXTURE_2D);
+					glBindTexture(GL_TEXTURE_2D, chaoid);
+					glTranslatef(i,j,0);
+					cubo();
+					glDisable(GL_TEXTURE_2D);
 				glPopMatrix();
 			}else if(labirinto[i][j] == MESA){ //se for objeto CONE
 				glPushMatrix();
@@ -472,6 +599,12 @@ void drawMaze( double w, double h){
 		}
 	}
 	glPopMatrix();
+
+	//transparencia
+	glEnable(GL_BLEND);
+glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+
 };
 
 void drawTable(){
@@ -590,49 +723,44 @@ void drawRobot(){
 //	glPopMatrix();
 };
 
-void swapRB(unsigned char & b, unsigned char & r) {
-	unsigned char x;
-	x = r;
-	r = b;
-	b = x;
+GLuint loadTex(unsigned char *Imagem,unsigned int ih,unsigned int iw){
+    GLuint textureId;
+
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glGenTextures(1, &textureId);
+	glBindTexture (GL_TEXTURE_2D,textureId);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, iw, ih, 0,GL_RGB, GL_UNSIGNED_BYTE, Imagem);
+	gluBuild2DMipmaps(textureId, GL_RGB, iw, ih, GL_RGB, GL_UNSIGNED_BYTE, Imagem);
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+
+	return textureId;
 }
 
-unsigned char *  loadBMP_custom(const char * filename, unsigned int &width, unsigned int &height) {
-	// Data read from the header of the BMP file
-	unsigned char header[54]; // Each BMP file begins by a 54-bytes header
-	unsigned int dataPos;     // Position in the file where the actual data begins
-	//unsigned int width, height;
-	unsigned int imageSize;   // = width*height*3
-	// Actual RGB data
-	unsigned char * data;
-	// Open the file
-	FILE * file;
-	file = fopen( filename, "rb");
-	if (!file) { printf("Image could not be opened\n"); return 0; };
-	if (fread(header, 1, 54, file) != 54) { // If not 54 bytes read : problem
-		printf("Not a correct BMP file\n");
-		return 0;
-	}
-	if (header[0] != 'B' || header[1] != 'M') {
-		printf("Not a correct BMP file\n");
-		return 0;
-	}
-	// Read ints from the byte array
-	dataPos = *(int*)&(header[0x0A]);
-	imageSize = *(int*)&(header[0x22]);
-	width = *(int*)&(header[0x12]);
-	height = *(int*)&(header[0x16]);
-	// Some BMP files are misformatted, guess missing information
-	if (imageSize == 0)    imageSize = width*height * 3; // 3 : one byte for each Red, Green and Blue component
-	if (dataPos == 0)      dataPos = 54; // The BMP header is done that way
-	// Create a buffer
-	data = new unsigned char[imageSize];
-	// Read the actual data from the file into the buffer
-	fread(data, 1, imageSize, file);
-	for (unsigned int i = 0; i < imageSize; i += 3) swapRB(data[i], data[i + 2]);
-	//Everything is in memory now, the file can be closed
-	fclose(file);
-	return data;
+void drawTexture(void){
+	unsigned int ih=0, iw=0;
+	unsigned char * imagem = NULL;
+	glShadeModel(GL_SMOOTH);
+
+    imagem = loadBMP_custom("floor2.bmp", iw, ih);
+      chaoid = loadTex(imagem,ih,iw);
+
+  	imagem = loadBMP_custom("wall3.bmp", iw, ih);
+      paredeid = loadTex(imagem,ih,iw);
+
+      /*imagem = loadBMP_custom("mad.bmp", iw, ih);
+      madid = loadTex(imagem,ih,iw);
+
+	imagem = loadBMP_custom("areia.bmp", iw, ih);
+      areiaid = loadTex(imagem,ih,iw);*/
+
+
+    delete imagem;
 }
 
 //##########################//
@@ -658,6 +786,7 @@ int main(int argc, char **argv) {
 	//FUNCOES DE CALLBACK
 	glutReshapeFunc(reshapeWindow);
 	glutTimerFunc(60, animate, 1);
+	drawTexture();
 	glutDisplayFunc(draw);
 	glutSpecialFunc(specialKeys);
 	glutFullScreen();
