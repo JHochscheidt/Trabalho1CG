@@ -27,6 +27,7 @@
 #define ESQUERDA 3
 #define DIREITA 4
 #define CHAO 1
+#define ESCALA 0.5
 
 GLfloat mat_shininess[] = { 50.0 };
 GLfloat light_position[] = { 0, 1000.0, 0, 1.0 };
@@ -102,6 +103,14 @@ int labirinto[hMaze][wMaze]={
 		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,3,1,0,0,0},
 		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0}
 };
+
+/*
+int labirinto[hMaze][wMaze]={
+	{0,1,0},
+	{0,0,0},
+	{0,0,0}
+};
+*/
 
 
 int windowWidth  = 700;
@@ -219,12 +228,15 @@ void reshapeWindow(GLsizei w, GLsizei h){
 	gluPerspective(45, w/h, 0.1, 300);
 }
 
-GLfloat v[8][3] = { {-1,-1,-1}, {1,-1,-1}, {1,1,-1}, {-1,1,-1},
-					{1,-1,1}, {-1,-1,1}, {-1,1,1}, {1,1,1}};
+GLfloat v[8][3] = { {-1*ESCALA,-1*ESCALA,-1*ESCALA}, {1*ESCALA,-1*ESCALA,-1*ESCALA}, {1*ESCALA,1*ESCALA,-1*ESCALA}, {-1*ESCALA,1*ESCALA,-1*ESCALA},
+					{1*ESCALA,-1*ESCALA,1*ESCALA}, {-1*ESCALA,-1*ESCALA,1*ESCALA}, {-1*ESCALA,1*ESCALA,1*ESCALA}, {1*ESCALA,1*ESCALA,1*ESCALA}};
 
 void cubo(){
-	glBegin(GL_QUADS);
+	
+
     glPushMatrix();
+    
+    glBegin(GL_QUADS);
 		glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, lmodel_ambient);
     glMaterialfv(GL_FRONT, GL_SPECULAR, luzEspecular);
 	glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
@@ -281,8 +293,9 @@ void cubo(){
 	glVertex3fv(v[5]);
 	glTexCoord2f(0.0f, 1.0f);
 	glVertex3fv(v[4]);
-    glPopMatrix();
 	glEnd();
+	
+	glPopMatrix();
 }
 void draw(){
 	glMatrixMode(GL_MODELVIEW);
@@ -528,7 +541,7 @@ void specialKeys(int key, int x, int y){
 
 void drawMaze( double w, double h){
 	glPushMatrix();
-	glTranslatef(0,0,1.5);
+	//glTranslatef(0,0,1.5);
 	for(int i = 0; i < h; i++){
 		for(int j = 0; j < w; j++){
 			if(labirinto[i][j] == 0){ //se posicao do labirinto for uma parede
@@ -554,7 +567,8 @@ void drawMaze( double w, double h){
 			}else if(labirinto[i][j] == MESA){ //se for objeto CONE
 				glPushMatrix();
 					glColor3f(1,0.75,0.25);
-					glTranslatef(i,j,0);
+					
+					glTranslatef(i,j,1.5);
 					drawTable();
 					glPushMatrix();
 						glColor3f(0.2,0.2,0.2);
@@ -567,7 +581,7 @@ void drawMaze( double w, double h){
 			}else if(labirinto[i][j] == TORUS){ //se for objeto TORUS
 				glPushMatrix();
 					glColor3f(1,1,0);
-					glTranslatef(i,j,0);
+					glTranslatef(i,j,1);
 					glRotatef(90,0,1,0);
 					glRotatef(rotateTORUS+=0.125,1,0,0);
 					glutSolidTorus(0.3, 0.7,50,50);
@@ -575,7 +589,7 @@ void drawMaze( double w, double h){
 			}else if(labirinto[i][j] == TEAPOT){ //se for objeto CHALEIRA
 				glPushMatrix();
 					glColor3f(0.2,0.2,0.2);
-					glTranslatef(i,j,0);
+					glTranslatef(i,j,1.5);
 					glRotatef(90,1,0,0);
 					glRotatef(rotateTEAPOT++,0,1,0);
 					glutSolidTeapot(0.75);
@@ -584,7 +598,7 @@ void drawMaze( double w, double h){
 				//desenhar um cubo com uma bola em cima
 				glPushMatrix();
 					glColor3f(0.625,0.625,0.625);
-					glTranslatef(i,j,0);
+					glTranslatef(i,j,1.5);
 					glRotatef(45,0,0,1);
 					glRotatef(rotateCUBE++,0,0,1);
 					glutSolidCube(2);
@@ -609,26 +623,27 @@ glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 void drawTable(){
 	//PERNAS
-	glPushMatrix();
-		glTranslatef(-0.625,0.625,0);
-		gluCylinder(legTable,0.25,0.25,ALTURA_PAREDE/4,50,50);
-	glPopMatrix();
-	glPushMatrix();
-		glTranslatef(0.625,0.625,0);
-		gluCylinder(legTable,0.25,0.25,ALTURA_PAREDE/4,50,50);
-	glPopMatrix();
-	glPushMatrix();
-		glTranslatef(0.625,-0.625,0);
-		gluCylinder(legTable,0.25,0.25,ALTURA_PAREDE/4,50,50);
-	glPopMatrix();
-	glPushMatrix();
-		glTranslatef(-0.625,-0.625,0);
-		gluCylinder(legTable,0.25,0.25,ALTURA_PAREDE/4,50,50);
-	glPopMatrix();
-	//TAMPO DA MESA
-	glPushMatrix();
-		glTranslatef(0,0,ALTURA_PAREDE/4);
-		gluDisk(tampoTable, 0,1.5,50,50);
+		glPushMatrix();
+			glTranslatef(-0.625,0.625,0);
+			gluCylinder(legTable,0.25,0.25,ALTURA_PAREDE/4,50,50);
+		glPopMatrix();
+		glPushMatrix();
+			glTranslatef(0.625,0.625,0);
+			gluCylinder(legTable,0.25,0.25,ALTURA_PAREDE/4,50,50);
+		glPopMatrix();
+		glPushMatrix();
+			glTranslatef(0.625,-0.625,0);
+			gluCylinder(legTable,0.25,0.25,ALTURA_PAREDE/4,50,50);
+		glPopMatrix();
+		glPushMatrix();
+			glTranslatef(-0.625,-0.625,0);
+			gluCylinder(legTable,0.25,0.25,ALTURA_PAREDE/4,50,50);
+		glPopMatrix();
+		//TAMPO DA MESA
+		glPushMatrix();
+			glTranslatef(0,0,ALTURA_PAREDE/4);
+			gluDisk(tampoTable, 0,1.5,50,50);
+		glPopMatrix();
 	glPopMatrix();
 };
 
