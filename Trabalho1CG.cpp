@@ -15,19 +15,23 @@
 #define X 0
 #define Y 1
 #define Z 2
+#define PAREDE 0
 #define MESA 2
 #define TORUS 3
 #define OBJS 5
 #define ALTURA_PAREDE 10
 #define TEAPOT 4
 #define CAM_PADRAO 2
-#define CAM_ROBO 4
+#define CAM_ROBO 3
+#define CAM_MESA_CENTRO 4
+#define CAM_TEAPOT 5
 #define FRENTE 1
 #define TRAS 2
 #define ESQUERDA 3
 #define DIREITA 4
 #define CHAO 1
 #define ESCALA 0.5
+
 
 GLfloat mat_shininess[] = { 50.0 };
 GLfloat light_position[] = { 0, 1000.0, 0, 1.0 };
@@ -38,6 +42,8 @@ GLfloat lmodel_ambient[] = {1,1,1,1.0};
 
 
 GLuint chaoid,paredeid;
+
+
 
 int labirinto[hMaze][wMaze]={
 		//Linha 1
@@ -66,17 +72,17 @@ int labirinto[hMaze][wMaze]={
 		{0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
 		//linha 7
 		{0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0},
-		{0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0},
-		{0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,0,9,9,9,9,9,9,9,9,1,1,1,9,9,9,9,9,9,9,9,0,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,0,9,9,9,9,9,9,9,9,1,1,1,9,9,9,9,9,9,9,9,0,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0},
 		//linha 8
-		{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
+		{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,0,9,9,1,1,1,1,1,1,1,9,1,1,1,1,1,1,1,9,9,0,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
 		//posicao inicial do boneco
-		{1,1,1,1,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1,3,1,0,0,0,1,1,1,0,0,0,1,3,1,1,1,1,1,2,1,1,1,1,1,3,1,0,0,0,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
+		{1,1,1,1,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1,3,1,0,0,0,1,1,1,0,9,9,1,3,1,1,1,1,1,2,1,1,1,1,1,3,1,9,9,0,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
 		//posicao inicial do boneco
-		{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
+		{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,0,9,9,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,9,9,0,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
 		//linha 9
-		{0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0},
-		{0,0,0,0,0,0,0,0,0,0,0,0,1,5,1,0,0,0,0,0,0,0,0,0,1,3,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,3,1,0,0,0,0,0,0,0,0,0,1,3,1,0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,0,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,0,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0,0,0,1,5,1,0,0,0,0,0,0,0,0,0,1,3,1,0,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,0,1,3,1,0,0,0,0,0,0,0,0,0,1,3,1,0,0,0,0,0,0,0,0,0,0,0,0},
 		{0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0},
 		//linha 10
 		{0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
@@ -104,13 +110,7 @@ int labirinto[hMaze][wMaze]={
 		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0}
 };
 
-/*
-int labirinto[hMaze][wMaze]={
-	{0,1,0},
-	{0,0,0},
-	{0,0,0}
-};
-*/
+
 
 
 int windowWidth  = 700;
@@ -137,15 +137,16 @@ bool ROT_HEAD_RIGHT = true;
 int posRobo[3] = {22,0,0};
 double camera[3] = {hMaze/2,wMaze/2,100};
 double focus[3] = {hMaze/2,wMaze/2,0}; // para onde a camera esta olhando
-
-/*GLfloat luzAmbiente[4] = { 0.2,0.2,0.2,1.0 };
+double rotCamX = 0,  rotCamY = 0, rotCamZ = 0;
+/*
+GLfloat luzAmbiente[4] = { 0.2,0.2,0.2,1.0 };
 GLfloat luzDifusa[4] = { 0.5,0.5,0.5, 1.0 };	   // "cor"
 GLfloat luzEspecular[4] = { 0.7,0.7,0.7, 1.0 };// "brilho"
 GLfloat posicaoLuz[4] = { 0.0, 50.0, 50.0, 1.0 };
 // Capacidade de brilho do material
 GLfloat especularidade[4] = { 1.0,1.0,1.0,1.0 };
-GLint especMaterial = 10;*/
-
+GLint especMaterial = 10;
+*/
 
 GLUquadricObj *novaQuadrica();
 void reshapeWindow(GLsizei w, GLsizei h);
@@ -228,12 +229,56 @@ void reshapeWindow(GLsizei w, GLsizei h){
 	gluPerspective(45, w/h, 0.1, 300);
 }
 
-GLfloat v[8][3] = { {-1*ESCALA,-1*ESCALA,-1*ESCALA}, {1*ESCALA,-1*ESCALA,-1*ESCALA}, {1*ESCALA,1*ESCALA,-1*ESCALA}, {-1*ESCALA,1*ESCALA,-1*ESCALA},
-					{1*ESCALA,-1*ESCALA,1*ESCALA}, {-1*ESCALA,-1*ESCALA,1*ESCALA}, {-1*ESCALA,1*ESCALA,1*ESCALA}, {1*ESCALA,1*ESCALA,1*ESCALA}};
+GLfloat v_cubo[8][3] = { 
+	{-1*ESCALA,-1*ESCALA,-1*ESCALA}, 
+	{1*ESCALA,-1*ESCALA,-1*ESCALA}, 
+	{1*ESCALA,1*ESCALA,-1*ESCALA}, 
+	{-1*ESCALA,1*ESCALA,-1*ESCALA},
+	{1*ESCALA,-1*ESCALA,1*ESCALA}, 
+	{-1*ESCALA,-1*ESCALA,1*ESCALA},
+	{-1*ESCALA,1*ESCALA,1*ESCALA}, 
+	{1*ESCALA,1*ESCALA,1*ESCALA}
+};
+
+GLfloat v_quadrado[4][3] = { 
+	{-1*ESCALA,-1*ESCALA,0}, 
+	{1*ESCALA,-1*ESCALA,0}, 
+	{1*ESCALA,1*ESCALA,0}, 
+	{-1*ESCALA,1*ESCALA,0}
+};
+
+GLfloat v_baseDesenho[4][3] = {
+	{-10,-10},
+	{hMaze + 10, -10},
+	{hMaze + 10, wMaze + 10},
+	{-10,wMaze + 10}
+};
+
+
+
+
+void quadrado(){
+	glPushMatrix();
+    
+    glBegin(GL_QUADS);
+		glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, lmodel_ambient);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, luzEspecular);
+	glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+	
+	glTexCoord2f(0.0f, 0.0f);
+	glVertex3fv(v_quadrado[0]);
+	glTexCoord2f(ESCALA*1.0f, 0.0f);
+	glVertex3fv(v_quadrado[1]);
+	glTexCoord2f(ESCALA*1.0f,ESCALA*1.0f);
+	glVertex3fv(v_quadrado[2]);
+	glTexCoord2f(0.0f, ESCALA*1.0f);
+	glVertex3fv(v_quadrado[3]);
+	glEnd();
+	
+	glPopMatrix();
+}
 
 void cubo(){
-	
-
     glPushMatrix();
     
     glBegin(GL_QUADS);
@@ -241,67 +286,67 @@ void cubo(){
     glMaterialfv(GL_FRONT, GL_SPECULAR, luzEspecular);
 	glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
 	glTexCoord2f(0.0f, 0.0f);
-	glVertex3fv(v[0]);
-	glTexCoord2f(1.0f, 0.0f);
-	glVertex3fv(v[1]);
-	glTexCoord2f(1.0f, 1.0f);
-	glVertex3fv(v[2]);
-	glTexCoord2f(0.0f, 1.0f);
-	glVertex3fv(v[3]);
+	glVertex3fv(v_cubo[0]);
+	glTexCoord2f(ESCALA*1.0f, 0.0f);
+	glVertex3fv(v_cubo[1]);
+	glTexCoord2f(ESCALA*1.0f,ESCALA*1.0f);
+	glVertex3fv(v_cubo[2]);
+	glTexCoord2f(0.0f, ESCALA*1.0f);
+	glVertex3fv(v_cubo[3]);
 
 	glTexCoord2f(0.0f, 0.0f);
-	glVertex3fv(v[4]);
-	glTexCoord2f(1.0f, 0.0f);
-	glVertex3fv(v[5]);
-	glTexCoord2f(1.0f, 1.0f);
-	glVertex3fv(v[6]);
-	glTexCoord2f(0.0f, 1.0f);
-	glVertex3fv(v[7]);
+	glVertex3fv(v_cubo[4]);
+	glTexCoord2f(ESCALA*1.0f, 0.0f);
+	glVertex3fv(v_cubo[5]);
+	glTexCoord2f(ESCALA*1.0f, ESCALA*1.0f);
+	glVertex3fv(v_cubo[6]);
+	glTexCoord2f(0.0f, ESCALA*1.0f);
+	glVertex3fv(v_cubo[7]);
 
 	glTexCoord2f(0.0f, 0.0f);
-	glVertex3fv(v[0]);
-	glTexCoord2f(1.0f, 0.0f);
-	glVertex3fv(v[3]);
-	glTexCoord2f(1.0f, 1.0f);
-	glVertex3fv(v[6]);
-	glTexCoord2f(0.0f, 1.0f);
-	glVertex3fv(v[5]);
+	glVertex3fv(v_cubo[0]);
+	glTexCoord2f(ESCALA*1.0f, 0.0f);
+	glVertex3fv(v_cubo[3]);
+	glTexCoord2f(ESCALA*1.0f, ESCALA*1.0f);
+	glVertex3fv(v_cubo[6]);
+	glTexCoord2f(0.0f, ESCALA*1.0f);
+	glVertex3fv(v_cubo[5]);
 
 	glTexCoord2f(0.0f, 0.0f);
-	glVertex3fv(v[3]);
-	glTexCoord2f(1.0f, 0.0f);
-	glVertex3fv(v[2]);
-	glTexCoord2f(1.0f, 1.0f);
-	glVertex3fv(v[7]);
-	glTexCoord2f(0.0f, 1.0f);
-	glVertex3fv(v[6]);
+	glVertex3fv(v_cubo[3]);
+	glTexCoord2f(ESCALA*1.0f, 0.0f);
+	glVertex3fv(v_cubo[2]);
+	glTexCoord2f(ESCALA*1.0f, ESCALA*1.0f);
+	glVertex3fv(v_cubo[7]);
+	glTexCoord2f(0.0f, ESCALA*1.0f);
+	glVertex3fv(v_cubo[6]);
 
 	glTexCoord2f(0.0f, 0.0f);
-	glVertex3fv(v[1]);
-	glTexCoord2f(1.0f, 0.0f);
-	glVertex3fv(v[4]);
-	glTexCoord2f(1.0f, 1.0f);
-	glVertex3fv(v[7]);
-	glTexCoord2f(0.0f, 1.0f);
-	glVertex3fv(v[2]);
+	glVertex3fv(v_cubo[1]);
+	glTexCoord2f(ESCALA*1.0f, 0.0f);
+	glVertex3fv(v_cubo[4]);
+	glTexCoord2f(ESCALA*1.0f, ESCALA*1.0f);
+	glVertex3fv(v_cubo[7]);
+	glTexCoord2f(0.0f, ESCALA*1.0f);
+	glVertex3fv(v_cubo[2]);
 
 	glTexCoord2f(0.0f, 0.0f);
-	glVertex3fv(v[1]);
-	glTexCoord2f(1.0f, 0.0f);
-	glVertex3fv(v[0]);
-	glTexCoord2f(1.0f, 1.0f);
-	glVertex3fv(v[5]);
-	glTexCoord2f(0.0f, 1.0f);
-	glVertex3fv(v[4]);
+	glVertex3fv(v_cubo[1]);
+	glTexCoord2f(ESCALA*1.0f, 0.0f);
+	glVertex3fv(v_cubo[0]);
+	glTexCoord2f(ESCALA*1.0f, ESCALA*1.0f);
+	glVertex3fv(v_cubo[5]);
+	glTexCoord2f(0.0f, ESCALA*1.0f);
+	glVertex3fv(v_cubo[4]);
 	glEnd();
 	
 	glPopMatrix();
 }
+
 void draw(){
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-
-
+	
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	// Habilita o modelo de colorizacao de Gouraud
 	glShadeModel(GL_SMOOTH);
@@ -334,14 +379,22 @@ void draw(){
 	 glLightModelfv(GL_LIGHT_MODEL_AMBIENT, lmodel_ambient);
 
 	switch (CAM_ATUAL){
-	case CAM_PADRAO: //camera padrao olhando o labirinto de cima
-		gluLookAt(camera[X],camera[Y],camera[Z], focus[X], focus[Y], focus[Z], 0,1,0);
-		break;
-	case CAM_ROBO: //camera que foca o robo
-		gluLookAt(posRobo[X], posRobo[Y]-10, posRobo[Z]+30, posRobo[X], posRobo[Y], posRobo[Z], 0,1,0);
-		break;
+		case CAM_PADRAO: //camera padrao olhando o labirinto de cima
+			gluLookAt(camera[X],camera[Y],camera[Z], focus[X], focus[Y], focus[Z], 0,1,0);
+			break;
+		case CAM_ROBO: //camera que foca o robo
+			gluLookAt(posRobo[X], posRobo[Y]-10, posRobo[Z]+30, posRobo[X], posRobo[Y], posRobo[Z], 0,1,0);
+			break;
+		case CAM_MESA_CENTRO: // camera que foca a mesa central
+			gluLookAt(camera[X],camera[Y],camera[Z], focus[X], focus[Y], focus[Z], 0,1,0);
+			break;
+		case CAM_TEAPOT:
+			gluLookAt(camera[X],camera[Y],camera[Z], focus[X], focus[Y], focus[Z], 0,1,0);
+			break;
 	}
-
+	
+	
+	
 	glColor3f(0.5,0.75,0.25);
 
 	//CHAO
@@ -356,10 +409,10 @@ void draw(){
 	glPopMatrix();
 	glEnd();*/
 
-	glDisable(GL_LIGHTING);
-	glDisable(GL_LIGHT0);
-	glDisable(GL_LIGHT1);
-	glDisable(GL_NORMALIZE);
+	//glDisable(GL_LIGHTING);
+	//glDisable(GL_LIGHT0);
+	//glDisable(GL_LIGHT1);
+	//glDisable(GL_NORMALIZE);
 
 	glColor3f(1,0,0);
 	drawMaze(wMaze, hMaze);
@@ -388,6 +441,8 @@ void draw(){
 	}else if(angleRotateRobot > rotateRobot){
 		angleRotateRobot-=9;
 	}
+	
+	
 }
 
 void animate(int value){
@@ -444,12 +499,34 @@ void specialKeys(int key, int x, int y){
 			camera[Y] = wMaze/2;
 			camera[Z] = 100;
 			focus[X] = hMaze/2;
-			focus[Y] =wMaze/2;
+			focus[Y] = wMaze/2;
 			focus[Z] = 0;
 			break;
 		case GLUT_KEY_F3: //camera atras do robo estatica olhando o labirinto
 			CAM_ATUAL = CAM_ROBO; //camera atras do robo
 			break;
+		case GLUT_KEY_F4: // camera sobre a mesa central com o bule
+			CAM_ATUAL = CAM_MESA_CENTRO;
+			camera[X] = hMaze/2;
+			camera[Y] = wMaze/2;
+			camera[Z] = 25;	
+			//posicao em que esta o objeto
+			focus[X] = hMaze/2;
+			focus[Y] = wMaze/2;
+			focus[Z] = 0;
+			break;
+			
+		case GLUT_KEY_F5: //camera em cima da teapot
+			CAM_ATUAL = CAM_TEAPOT;
+			camera[X] = hMaze-5;
+			camera[Y] = wMaze-16;
+			camera[Z] = 25;	
+			//posicao em que esta o objeto
+			focus[X] = hMaze-5;
+			focus[Y] = wMaze-16;
+			focus[Z] = 0;
+			break;
+		
 		case GLUT_KEY_UP: //anda pra frente
 			if(posRobo[Y]+2 < wMaze){
 				if(labirinto[posRobo[X]][posRobo[Y]+2] == 1){
@@ -540,34 +617,57 @@ void specialKeys(int key, int x, int y){
 
 
 void drawMaze( double w, double h){
+	
+	//desenhar base fora do labirinto
+	glPushMatrix();
+		glTranslatef(0,0,-1);
+		glColor3f(0.3,1,0.3);
+		glBegin(GL_QUADS);
+		glVertex3fv(v_baseDesenho[0]);	
+		glVertex3fv(v_baseDesenho[1]);
+		glVertex3fv(v_baseDesenho[2]);
+		glVertex3fv(v_baseDesenho[3]);
+		glEnd();
+	glPopMatrix();
 	glPushMatrix();
 	//glTranslatef(0,0,1.5);
 	for(int i = 0; i < h; i++){
 		for(int j = 0; j < w; j++){
-			if(labirinto[i][j] == 0){ //se posicao do labirinto for uma parede
+			if(labirinto[i][j] == PAREDE){ //se posicao do labirinto for uma parede
 				glPushMatrix();
 					glColor3f(1.0f, 1.0f, 1.0f);
 					glScalef(1,1,ALTURA_PAREDE);
 					glEnable(GL_TEXTURE_2D);
 					glBindTexture(GL_TEXTURE_2D, paredeid);
-					glTranslatef(i,j,0);
+					glTranslatef(i,j,ESCALA);
 					cubo();
 					glDisable(GL_TEXTURE_2D);
 				glPopMatrix();
-			}else if(labirinto[i][j] == CHAO){
+			}else{
 				glPushMatrix();
 				glColor3f(1.0f, 1.0f, 1.0f);
 					glScalef(1,1,0);
 					glEnable(GL_TEXTURE_2D);
 					glBindTexture(GL_TEXTURE_2D, chaoid);
-					glTranslatef(i,j,0);
-					cubo();
+					glTranslatef(i,j,ESCALA);
+					quadrado();
 					glDisable(GL_TEXTURE_2D);
 				glPopMatrix();
-			}else if(labirinto[i][j] == MESA){ //se for objeto CONE
+			}
+			/*if(labirinto[i][j] == CHAO){
+				glPushMatrix();
+				glColor3f(1.0f, 1.0f, 1.0f);
+					glScalef(1,1,0);
+					glEnable(GL_TEXTURE_2D);
+					glBindTexture(GL_TEXTURE_2D, chaoid);
+					glTranslatef(i,j,ESCALA);
+					quadrado();
+					glDisable(GL_TEXTURE_2D);
+				glPopMatrix();
+			}else */
+			if(labirinto[i][j] == MESA){ //se for objeto CONE
 				glPushMatrix();
 					glColor3f(1,0.75,0.25);
-					
 					glTranslatef(i,j,1.5);
 					drawTable();
 					glPushMatrix();
@@ -624,25 +724,25 @@ glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 void drawTable(){
 	//PERNAS
 		glPushMatrix();
-			glTranslatef(-0.625,0.625,0);
-			gluCylinder(legTable,0.25,0.25,ALTURA_PAREDE/4,50,50);
+			glTranslatef(-1,1,0);
+			gluCylinder(legTable,0.25,0.25,ALTURA_PAREDE/2,50,50);
 		glPopMatrix();
 		glPushMatrix();
-			glTranslatef(0.625,0.625,0);
-			gluCylinder(legTable,0.25,0.25,ALTURA_PAREDE/4,50,50);
+			glTranslatef(1,1,0);
+			gluCylinder(legTable,0.25,0.25,ALTURA_PAREDE/2,50,50);
 		glPopMatrix();
 		glPushMatrix();
-			glTranslatef(0.625,-0.625,0);
-			gluCylinder(legTable,0.25,0.25,ALTURA_PAREDE/4,50,50);
+			glTranslatef(1,-1,0);
+			gluCylinder(legTable,0.25,0.25,ALTURA_PAREDE/2,50,50);
 		glPopMatrix();
 		glPushMatrix();
-			glTranslatef(-0.625,-0.625,0);
-			gluCylinder(legTable,0.25,0.25,ALTURA_PAREDE/4,50,50);
+			glTranslatef(-1,-1,0);
+			gluCylinder(legTable,0.25,0.25,ALTURA_PAREDE/2,50,50);
 		glPopMatrix();
 		//TAMPO DA MESA
 		glPushMatrix();
-			glTranslatef(0,0,ALTURA_PAREDE/4);
-			gluDisk(tampoTable, 0,1.5,50,50);
+			glTranslatef(0,0,ALTURA_PAREDE/2);
+			gluDisk(tampoTable, 0,2,50,50);
 		glPopMatrix();
 	glPopMatrix();
 };
@@ -666,7 +766,7 @@ void drawRobot(){
 			gluCylinder(leg, 0.15, 0.15, 2, 50,50);
 		glPopMatrix();
 		//TRONCO
-		glColor3f(0.7f,0.7f,0.7f);
+		glColor3f(0.7f,0.3f,0.3f);
 		glPushMatrix();
 			glTranslatef(0, 0, 0.25*13);
 			glScalef(2,1,3);
