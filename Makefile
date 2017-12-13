@@ -16,7 +16,7 @@ OBJECTS := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.o))
 #parametros de compilacao
 CFLAGS := -g
 #link para libraries
-LIB := -lglut -lGL -lGLU -lm
+LIB := -lglut -lGL -lGLU -lm 
 #includes
 INC := -I include
 
@@ -33,7 +33,7 @@ $(BUILDDIR)/%.o: $(SRCDIR)/%.$(SRCEXT)
 
 
 clean:
-	@echo " Cleaning..."; 
+	@echo " Cleaning...";
 	@echo " $(RM) -r $(BUILDDIR) $(TARGET)";
 	$(RM) -r $(BUILDDIR) $(TARGET)
 
