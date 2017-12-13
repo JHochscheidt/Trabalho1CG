@@ -1,5 +1,5 @@
 
-GLuint chaoid,paredeid;
+GLuint chaoid,paredeid,windowid;
 
 void swapRB(unsigned char & b, unsigned char & r);
 unsigned char *  loadBMP_custom(const char * filename, unsigned int &width, unsigned int &height);
@@ -80,10 +80,10 @@ void drawTexture(void){
 	imagem = loadBMP_custom("wall3.bmp", iw, ih);
   paredeid = loadTex(imagem,ih,iw);
 
-  /*imagem = loadBMP_custom("mad.bmp", iw, ih);
-  madid = loadTex(imagem,ih,iw);
+  imagem = loadBMP_custom("window2.bmp", iw, ih);
+  windowid = loadTex(imagem,ih,iw);
 
-	imagem = loadBMP_custom("areia.bmp", iw, ih);
+	/*imagem = loadBMP_custom("areia.bmp", iw, ih);
   areiaid = loadTex(imagem,ih,iw);*/
 
 

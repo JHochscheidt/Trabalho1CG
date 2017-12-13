@@ -232,17 +232,22 @@ void drawWindow() {
 	  //desenhando molduras
     //cima
     glPushMatrix();
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D,windowid);
 			glTranslatef(4, 4, 5);
 			glScalef(1,5,2);
-      glColor3f(0.0f, 0.0f, 0.0f);
+      //glColor3f(0.0f, 0.0f, 0.0f);
       cubo();
     glPopMatrix();
     //baixo
     glPushMatrix();
+		//glEnable(GL_TEXTURE_2D);
+		//glBindTexture(GL_TEXTURE_2D,windowid);
 		glTranslatef(4, 4, -3);
-        glColor3f(0.0f, 0.0f, 0.0f);
+        //glColor3f(0.0f, 0.0f, 0.0f);
         glScalef(1,5,2);
         cubo();
+				glDisable(GL_TEXTURE_2D);
     glPopMatrix();
 
 		// //centro "janela"
