@@ -25,20 +25,13 @@
 #define CAM_ROBO 3
 #define CAM_MESA_CENTRO 4
 #define CAM_TEAPOT 5
+#define CAM_CUBO_CONE_ESFERA 6
 #define FRENTE 1
 #define TRAS 2
 #define ESQUERDA 3
 #define DIREITA 4
 #define CHAO 1
 #define ESCALA 0.5
-
-
-GLfloat mat_shininess[] = { 50.0 };
-GLfloat light_position[] = { 0, 1000.0, 0, 1.0 };
-GLfloat light_position2[] = {2100, 1000.0, 2100, 1.0 };
-GLfloat luzDifusa[4] = { 0.7,0.7,0.7,1.0 };	   // "cor"
-GLfloat luzEspecular[4] = { 0.7,0.7,0.7,1.0 };
-GLfloat lmodel_ambient[] = {1,1,1,1.0};
 
 
 GLuint chaoid,paredeid;
@@ -75,10 +68,9 @@ int labirinto[hMaze][wMaze]={
 		{0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,0,9,9,9,9,9,9,9,9,1,1,1,9,9,9,9,9,9,9,9,0,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0},
 		{0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,0,9,9,9,9,9,9,9,9,1,1,1,9,9,9,9,9,9,9,9,0,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0},
 		//linha 8
+		//posicao inicial do boneco
 		{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,0,9,9,1,1,1,1,1,1,1,9,1,1,1,1,1,1,1,9,9,0,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
-		//posicao inicial do boneco
 		{1,1,1,1,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1,3,1,0,0,0,1,1,1,0,9,9,1,3,1,1,1,1,1,2,1,1,1,1,1,3,1,9,9,0,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
-		//posicao inicial do boneco
 		{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,0,9,9,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,9,9,0,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
 		//linha 9
 		{0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,0,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,0,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -138,7 +130,16 @@ int posRobo[3] = {22,0,0};
 double camera[3] = {hMaze/2,wMaze/2,100};
 double focus[3] = {hMaze/2,wMaze/2,0}; // para onde a camera esta olhando
 double rotCamX = 0,  rotCamY = 0, rotCamZ = 0;
-/*
+
+
+GLfloat mat_shininess[] = { 50.0 };
+GLfloat light_position[] = { 0, 1000.0, 0, 1.0 };
+GLfloat light_position2[] = {2100, 1000.0, 2100, 1.0 };
+//GLfloat luzDifusa[4] = { 0.7,0.7,0.7,1.0 };	   // "cor"
+//GLfloat luzEspecular[4] = { 0.7,0.7,0.7,1.0 };
+GLfloat lmodel_ambient[] = {1,1,1,1.0};
+
+
 GLfloat luzAmbiente[4] = { 0.2,0.2,0.2,1.0 };
 GLfloat luzDifusa[4] = { 0.5,0.5,0.5, 1.0 };	   // "cor"
 GLfloat luzEspecular[4] = { 0.7,0.7,0.7, 1.0 };// "brilho"
@@ -146,7 +147,7 @@ GLfloat posicaoLuz[4] = { 0.0, 50.0, 50.0, 1.0 };
 // Capacidade de brilho do material
 GLfloat especularidade[4] = { 1.0,1.0,1.0,1.0 };
 GLint especMaterial = 10;
-*/
+
 
 GLUquadricObj *novaQuadrica();
 void reshapeWindow(GLsizei w, GLsizei h);
@@ -350,46 +351,45 @@ void draw(){
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	// Habilita o modelo de colorizacao de Gouraud
 	glShadeModel(GL_SMOOTH);
-	glDisable(GL_BLEND);
+	//glDisable(GL_BLEND);
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
     glEnable(GL_LIGHT1);
     glEnable(GL_NORMALIZE);
 	// Define a refletencia do material
-	//glMaterialfv(GL_FRONT, GL_SPECULAR, especularidade);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, especularidade);
 	// Define a concentracao do brilho
-	//glMateriali(GL_FRONT, GL_SHININESS, especMaterial);
+	glMateriali(GL_FRONT, GL_SHININESS, especMaterial);
 	// Ativa o uso da luz ambiente
-	//glLightModelfv(GL_LIGHT_MODEL_AMBIENT, luzAmbiente);
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, luzAmbiente);
 	// Define os parametros da luz de numero 0
-	/*glLightfv(GL_LIGHT1, GL_AMBIENT, luzAmbiente);
+	glLightfv(GL_LIGHT1, GL_AMBIENT, luzAmbiente);
 	glLightfv(GL_LIGHT1, GL_DIFFUSE, luzDifusa);
 	glLightfv(GL_LIGHT1, GL_SPECULAR, luzEspecular);
-	glLightfv(GL_LIGHT1, GL_POSITION, posicaoLuz);*/
+	glLightfv(GL_LIGHT1, GL_POSITION, posicaoLuz);
 
+	glLightfv(GL_LIGHT0, GL_AMBIENT, luzAmbiente);
 	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-  glLightfv(GL_LIGHT0, GL_DIFFUSE, luzDifusa);
-  glLightfv(GL_LIGHT0, GL_SPECULAR, luzEspecular);
+  	glLightfv(GL_LIGHT0, GL_DIFFUSE, luzDifusa);
+  	glLightfv(GL_LIGHT0, GL_SPECULAR, luzEspecular);
 
-
-  glLightfv(GL_LIGHT1, GL_POSITION,  light_position2);
-  glLightfv(GL_LIGHT1, GL_DIFFUSE, luzDifusa);
-  glLightfv(GL_LIGHT1, GL_SPECULAR, luzEspecular);
-
-	 glLightModelfv(GL_LIGHT_MODEL_AMBIENT, lmodel_ambient);
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, lmodel_ambient);
 
 	switch (CAM_ATUAL){
 		case CAM_PADRAO: //camera padrao olhando o labirinto de cima
 			gluLookAt(camera[X],camera[Y],camera[Z], focus[X], focus[Y], focus[Z], 0,1,0);
 			break;
 		case CAM_ROBO: //camera que foca o robo
-			gluLookAt(posRobo[X], posRobo[Y]-10, posRobo[Z]+30, posRobo[X], posRobo[Y], posRobo[Z], 0,1,0);
+			gluLookAt(posRobo[X], posRobo[Y]-10, posRobo[Z]+30, posRobo[X], posRobo[Y], posRobo[Z], 0,0,1);
 			break;
 		case CAM_MESA_CENTRO: // camera que foca a mesa central
-			gluLookAt(camera[X],camera[Y],camera[Z], focus[X], focus[Y], focus[Z], 0,1,0);
+			gluLookAt(camera[X],camera[Y],camera[Z], focus[X], focus[Y], focus[Z], 0,0,1);
 			break;
 		case CAM_TEAPOT:
-			gluLookAt(camera[X],camera[Y],camera[Z], focus[X], focus[Y], focus[Z], 0,1,0);
+			gluLookAt(camera[X],camera[Y],camera[Z], focus[X], focus[Y], focus[Z], 0,0,1);
+			break;
+		case CAM_CUBO_CONE_ESFERA:
+			gluLookAt(camera[X],camera[Y],camera[Z], focus[X], focus[Y], focus[Z], 0,0,1);
 			break;
 	}
 	
@@ -441,6 +441,8 @@ void draw(){
 	}else if(angleRotateRobot > rotateRobot){
 		angleRotateRobot-=9;
 	}
+
+	
 	
 	
 }
@@ -507,24 +509,34 @@ void specialKeys(int key, int x, int y){
 			break;
 		case GLUT_KEY_F4: // camera sobre a mesa central com o bule
 			CAM_ATUAL = CAM_MESA_CENTRO;
-			camera[X] = hMaze/2;
-			camera[Y] = wMaze/2;
-			camera[Z] = 25;	
+			camera[X] = 22;
+			camera[Y] = 28;
+			camera[Z] = 15;	
 			//posicao em que esta o objeto
-			focus[X] = hMaze/2;
-			focus[Y] = wMaze/2;
-			focus[Z] = 0;
+			focus[X] = 22;
+			focus[Y] = 37;
+			focus[Z] = 5;
 			break;
 			
 		case GLUT_KEY_F5: //camera em cima da teapot
 			CAM_ATUAL = CAM_TEAPOT;
 			camera[X] = hMaze-5;
-			camera[Y] = wMaze-16;
-			camera[Z] = 25;	
+			camera[Y] = wMaze-30;
+			camera[Z] = 1;	
 			//posicao em que esta o objeto
 			focus[X] = hMaze-5;
 			focus[Y] = wMaze-16;
-			focus[Z] = 0;
+			focus[Z] = 2.5;
+			break;
+		case GLUT_KEY_F6: // camera sobre os 3 objetos [CUBO/CONE/ESFERA]
+			CAM_ATUAL = CAM_CUBO_CONE_ESFERA;
+			camera[X] = 15;
+			camera[Y] = 13;
+			camera[Z] = 1;	
+			//posicao em que esta o objeto
+			focus[X] = 26;
+			focus[Y] = 13;
+			focus[Z] = 2.5;
 			break;
 		
 		case GLUT_KEY_UP: //anda pra frente
@@ -619,18 +631,18 @@ void specialKeys(int key, int x, int y){
 void drawMaze( double w, double h){
 	
 	//desenhar base fora do labirinto
-	glPushMatrix();
-		glTranslatef(0,0,-1);
-		glColor3f(0.3,1,0.3);
-		glBegin(GL_QUADS);
-		glVertex3fv(v_baseDesenho[0]);	
-		glVertex3fv(v_baseDesenho[1]);
-		glVertex3fv(v_baseDesenho[2]);
-		glVertex3fv(v_baseDesenho[3]);
-		glEnd();
-	glPopMatrix();
-	glPushMatrix();
-	//glTranslatef(0,0,1.5);
+	// glPushMatrix();
+	// 	glTranslatef(0,0,-0.1);
+	// 	glColor3f(0.3,1,0.3);
+	// 	glBegin(GL_QUADS);
+	// 	glVertex3fv(v_baseDesenho[0]);	
+	// 	glVertex3fv(v_baseDesenho[1]);
+	// 	glVertex3fv(v_baseDesenho[2]);
+	// 	glVertex3fv(v_baseDesenho[3]);
+	// 	glEnd();
+	// glPopMatrix();
+	// glPushMatrix();
+	
 	for(int i = 0; i < h; i++){
 		for(int j = 0; j < w; j++){
 			if(labirinto[i][j] == PAREDE){ //se posicao do labirinto for uma parede
@@ -654,25 +666,15 @@ void drawMaze( double w, double h){
 					glDisable(GL_TEXTURE_2D);
 				glPopMatrix();
 			}
-			/*if(labirinto[i][j] == CHAO){
-				glPushMatrix();
-				glColor3f(1.0f, 1.0f, 1.0f);
-					glScalef(1,1,0);
-					glEnable(GL_TEXTURE_2D);
-					glBindTexture(GL_TEXTURE_2D, chaoid);
-					glTranslatef(i,j,ESCALA);
-					quadrado();
-					glDisable(GL_TEXTURE_2D);
-				glPopMatrix();
-			}else */
-			if(labirinto[i][j] == MESA){ //se for objeto CONE
+		
+			if(labirinto[i][j] == MESA){ //se for objeto MESA
 				glPushMatrix();
 					glColor3f(1,0.75,0.25);
-					glTranslatef(i,j,1.5);
+					glTranslatef(i,j,0);
 					drawTable();
 					glPushMatrix();
-						glColor3f(0.2,0.2,0.2);
-						glTranslatef(0,0,ALTURA_PAREDE/3);
+						glColor3f(0.1,0.2,0.3);
+						glTranslatef(i,j,6);
 						glRotatef(90,1,0,0);
 						glRotatef(-45,0,0,1);
 						glutSolidTeapot(0.4);
@@ -684,26 +686,26 @@ void drawMaze( double w, double h){
 					glTranslatef(i,j,1);
 					glRotatef(90,0,1,0);
 					glRotatef(rotateTORUS+=0.125,1,0,0);
-					glutSolidTorus(0.3, 0.7,50,50);
+					//glutSolidTorus(0.3, 0.7,50,50);
 				glPopMatrix();
 			}else if(labirinto[i][j] == TEAPOT){ //se for objeto CHALEIRA
 				glPushMatrix();
 					glColor3f(0.2,0.2,0.2);
-					glTranslatef(i,j,1.5);
+					glTranslatef(i,j,0.6);
 					glRotatef(90,1,0,0);
 					glRotatef(rotateTEAPOT++,0,1,0);
-					glutSolidTeapot(0.75);
+					glutSolidTeapot(0.8);
 				glPopMatrix();
 			}else if(labirinto[i][j] == OBJS){
-				//desenhar um cubo com uma bola em cima
+				//desenha um cubo com um cone em cima, e uma esfera sobre o cone
 				glPushMatrix();
 					glColor3f(0.625,0.625,0.625);
-					glTranslatef(i,j,1.5);
+					glTranslatef(i,j,1);
 					glRotatef(45,0,0,1);
 					glRotatef(rotateCUBE++,0,0,1);
 					glutSolidCube(2);
 					glColor3f(0.625,0.125,0.625);
-					glTranslatef(0,0,2);
+					glTranslatef(0,0,1);
 					glutSolidCone(0.75,3,50,50);
 					glColor3f(0.625,0.625,0.125);
 					glTranslatef(0,0,3);
@@ -886,7 +888,7 @@ int main(int argc, char **argv) {
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
 	glutInitWindowPosition(windowPosX,windowPosY);
 	glutInitWindowSize(windowWidth,windowHeight);
-	glutCreateWindow("Computação Gráfica - Trabalho 1 - Labirinto 3D");
+	glutCreateWindow("Computação Gráfica - Trabalho 2 - Labirinto 3D");
 	glClearColor(0,0,0,1);
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
