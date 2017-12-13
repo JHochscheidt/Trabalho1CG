@@ -69,21 +69,7 @@ double focus[3] = {hMaze/2,wMaze/2,0}; // para onde a camera esta olhando
 double rotCamX = 0,  rotCamY = 0, rotCamZ = 0;
 
 
-GLfloat mat_shininess[] = { 50.0 };
-GLfloat light_position[] = { 0, 1000.0, 0, 1.0 };
-GLfloat light_position2[] = {2100, 1000.0, 2100, 1.0 };
-//GLfloat luzDifusa[4] = { 0.7,0.7,0.7,1.0 };	   // "cor"
-//GLfloat luzEspecular[4] = { 0.7,0.7,0.7,1.0 };
-GLfloat lmodel_ambient[] = {1,1,1,1.0};
 
-
-GLfloat luzAmbiente[4] = { 0.2,0.2,0.2,1.0 };
-GLfloat luzDifusa[4] = { 0.8,0.8,0.8, 1.0 };	   // "cor"
-GLfloat luzEspecular[4] = { 1,1,1, 1.0 };// "brilho"
-GLfloat posicaoLuz[4] = { 0.0, 50.0, 50.0, 1.0 };
-// Capacidade de brilho do material
-GLfloat especularidade[4] = { 1.0,1.0,1.0,1.0 };
-GLint especMaterial = 10;
 
 
 GLUquadricObj *novaQuadrica();
@@ -95,9 +81,34 @@ void specialKeys(int key, int x, int y);
 void drawMaze( double w, double h);
 
 
-
-
-
+void iluminacao(){
+	
+	// primeira luz
+	GLfloat luzDifusa1[] = { 0.8,0.8,0.8, 1.0 };	// "cor"
+	GLfloat luzEspecular1[] = {1,1,1, 1.0 };// "brilho"
+	GLfloat light_position1[] = {hMaze*5 , wMaze*5, ALTURA_PAREDE, 1.0f };
+	GLfloat lightSpotDirection1[] = {0, -1, 0};
+	
+	
+	glLightfv(GL_LIGHT1, GL_DIFFUSE, luzDifusa1);
+	glLightfv(GL_LIGHT1, GL_SPECULAR, luzEspecular1);
+	glLightfv(GL_LIGHT1, GL_POSITION, light_position1);
+	glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 30.0);
+	glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, lightSpotDirection1);
+	
+	// segunda luz 
+	GLfloat luzDifusa2[] = { 1.0f,1.0f,1.0f, 1.0 };	// "cor"
+	GLfloat luzEspecular2[] = {1,1,1, 1.0 };// "brilho"
+	GLfloat light_position2[] = {0.0f, 0.0f, 0.0f, 1.0f };
+	GLfloat lightSpotDirection2[] = {0, -1, 0};
+  
+    glLightfv(GL_LIGHT2, GL_DIFFUSE, luzDifusa2);
+	glLightfv(GL_LIGHT2, GL_SPECULAR, luzEspecular2);
+	glLightfv(GL_LIGHT2, GL_POSITION, light_position2);
+	glLightf(GL_LIGHT2, GL_SPOT_CUTOFF, 100.0);
+	glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, lightSpotDirection2);
+  
+}
 
 
 
@@ -143,10 +154,7 @@ void quadrado(){
 	glPushMatrix();
 
     glBegin(GL_QUADS);
-		glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, lmodel_ambient);
-    glMaterialfv(GL_FRONT, GL_SPECULAR, luzEspecular);
-	glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
-
+	
 	glTexCoord2f(0.0f, 0.0f);
 	glVertex3fv(v_quadrado[0]);
 	glTexCoord2f(ESCALA*1.0f, 0.0f);
@@ -164,9 +172,7 @@ void cubo(){
     glPushMatrix();
 
     glBegin(GL_QUADS);
-		glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, lmodel_ambient);
-    glMaterialfv(GL_FRONT, GL_SPECULAR, luzEspecular);
-	glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+
 	glTexCoord2f(0.0f, 0.0f);
 	glVertex3fv(v_cubo[0]);
 	glTexCoord2f(ESCALA*1.0f, 0.0f);
@@ -229,33 +235,8 @@ void draw(){
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	// Habilita o modelo de colorizacao de Gouraud
-	glShadeModel(GL_SMOOTH);
-	//glDisable(GL_BLEND);
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
-    glEnable(GL_LIGHT1);
-    glEnable(GL_NORMALIZE);
-	// Define a refletencia do material
-	glMaterialfv(GL_FRONT, GL_SPECULAR, especularidade);
-	// Define a concentracao do brilho
-	glMateriali(GL_FRONT, GL_SHININESS, especMaterial);
-	// Ativa o uso da luz ambiente
-	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, luzAmbiente);
-	// Define os parametros da luz de numero 0
-	glLightfv(GL_LIGHT1, GL_AMBIENT, luzAmbiente);
-	glLightfv(GL_LIGHT1, GL_DIFFUSE, luzDifusa);
-	glLightfv(GL_LIGHT1, GL_SPECULAR, luzEspecular);
-	glLightfv(GL_LIGHT1, GL_POSITION, posicaoLuz);
-
-	glLightfv(GL_LIGHT0, GL_AMBIENT, luzAmbiente);
-	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-  	glLightfv(GL_LIGHT0, GL_DIFFUSE, luzDifusa);
-  	glLightfv(GL_LIGHT0, GL_SPECULAR, luzEspecular);
-
-	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, lmodel_ambient);
-
+	
+	
 	switch (CAM_ATUAL){
 		case CAM_PADRAO: //camera padrao olhando o labirinto de cima
 			gluLookAt(camera[X],camera[Y],camera[Z], focus[X], focus[Y], focus[Z], 0,1,0);
@@ -275,30 +256,18 @@ void draw(){
 	}
 
 
+	iluminacao();
+	
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	
 
 	glColor3f(0.5,0.75,0.25);
 
-	//CHAO
-	/*glPushMatrix();
-	glScalef(1,1,ALTURA_PAREDE/2);
-
-		glEnable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D, chaoid);
-		glTranslatef(1,1,1);
-		cubo();
-	glDisable(GL_TEXTURE_2D);
-	glPopMatrix();
-	glEnd();*/
-
-	//glDisable(GL_LIGHTING);
-	//glDisable(GL_LIGHT0);
-	//glDisable(GL_LIGHT1);
-	//glDisable(GL_NORMALIZE);
-
+	
 	glColor3f(1,0,0);
 	drawMaze(wMaze, hMaze);
 	drawRobot(posRobo, angleRotateRobot, rotateArms, rotateHead, leg, arm, neck);
-	glutSwapBuffers();
+	
 
 	//MOVIMENTOS DA CABEÇA
 	if(ROT_HEAD_RIGHT == true){
@@ -322,7 +291,7 @@ void draw(){
 	}else if(angleRotateRobot > rotateRobot){
 		angleRotateRobot-=9;
 	}
-
+	glutSwapBuffers();
 
 
 
@@ -511,17 +480,17 @@ void specialKeys(int key, int x, int y){
 void drawMaze( double w, double h){
 
 	//desenhar base fora do labirinto
-	// glPushMatrix();
-	// 	glTranslatef(0,0,-0.1);
-	// 	glColor3f(0.3,1,0.3);
-	// 	glBegin(GL_QUADS);
-	// 	glVertex3fv(v_baseDesenho[0]);
-	// 	glVertex3fv(v_baseDesenho[1]);
-	// 	glVertex3fv(v_baseDesenho[2]);
-	// 	glVertex3fv(v_baseDesenho[3]);
-	// 	glEnd();
-	// glPopMatrix();
-	// glPushMatrix();
+	 glPushMatrix();
+	 	glTranslatef(0,0,-0.1);
+	 	glColor3f(0.3,1,0.3);
+	 	glBegin(GL_QUADS);
+	 	glVertex3fv(v_baseDesenho[0]);
+	 	glVertex3fv(v_baseDesenho[1]);
+	 	glVertex3fv(v_baseDesenho[2]);
+	 	glVertex3fv(v_baseDesenho[3]);
+	 	glEnd();
+	 glPopMatrix();
+	
 
 	for(int i = 0; i < h; i++){
 		for(int j = 0; j < w; j++){
@@ -566,7 +535,7 @@ void drawMaze( double w, double h){
 					glTranslatef(i,j,1);
 					glRotatef(90,0,1,0);
 					glRotatef(rotateTORUS+=0.125,1,0,0);
-					//glutSolidTorus(0.3, 0.7,50,50);
+					glutSolidTorus(0.3, 0.7,50,50);
 				glPopMatrix();
 			}else if(labirinto[i][j] == TEAPOT){ //se for objeto CHALEIRA
 				glPushMatrix();
@@ -603,6 +572,41 @@ void drawMaze( double w, double h){
 };
 
 
+void init(){
+
+	// configs iluminacao
+	GLfloat luzAmbiente[] = {1.0f,1.0f,1.0f,1.0f};
+	GLfloat especularidade[] = {1.0f,1.0f,1.0f,1.0f};
+	GLint especMaterial = 10;
+	//Lfloat mat_shininess[] = { 50.0 };
+	
+	
+	//Habilita o uso de iluminação
+	glEnable(GL_LIGHTING);
+	// Habilita a luz de numero 0
+	glEnable(GL_LIGHT1);
+	glEnable(GL_LIGHT2);
+	// Habilita a definição da cor do material a partir da cor corrente
+	glEnable(GL_COLOR_MATERIAL);
+
+  	glEnable(GL_NORMALIZE);
+ 
+
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, especularidade);
+    glMateriali(GL_FRONT_AND_BACK, GL_SHININESS, especMaterial);
+    glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, luzAmbiente);
+
+
+    // Define a cor de fundo da janela de visualização como preta
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	
+}
+
 //##########################//
 //			MAIN			//
 //##########################//
@@ -612,16 +616,8 @@ int main(int argc, char **argv) {
 	glutInitWindowPosition(windowPosX,windowPosY);
 	glutInitWindowSize(windowWidth,windowHeight);
 	glutCreateWindow("Computação Gráfica - Trabalho 2 - Labirinto 3D");
-	glClearColor(0,0,0,1);
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LESS);
-	// Habilita a definição da cor do material a partir da cor corrente
-	glEnable(GL_COLOR_MATERIAL);
-	//Habilita o uso de iluminação
-	glEnable(GL_LIGHTING);
-	// Habilita a luz de numero 0
-	glEnable(GL_LIGHT1);
-	glEnable(GL_LIGHT0);
+	
+	
 	//FUNCOES DE CALLBACK
 	glutReshapeFunc(reshapeWindow);
 	glutTimerFunc(60, animate, 1);
@@ -630,5 +626,6 @@ int main(int argc, char **argv) {
 	glutSpecialFunc(specialKeys);
 	glutFullScreen();
 	glutKeyboardFunc(teclado);
+	init();
 	glutMainLoop();
 }
