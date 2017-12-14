@@ -26,13 +26,14 @@
 #define CAM_MESA_CENTRO 4
 #define CAM_TEAPOT 5
 #define CAM_CUBO_CONE_ESFERA 6
+#define CAM_JANELA_LATERAL 7
 #define FRENTE 1
 #define TRAS 2
 #define ESQUERDA 3
 #define DIREITA 4
 #define CHAO 1
 #define ESCALA 0.5
-
+#define MAXTEXTURES 1
 GLUquadricObj *novaQuadrica(){
 	GLUquadricObj *novaQuadrica = gluNewQuadric();
 	gluQuadricDrawStyle(novaQuadrica, GLU_FILL);
@@ -68,7 +69,7 @@ double camera[3] = {hMaze/2,wMaze/2,100};
 double focus[3] = {hMaze/2,wMaze/2,0}; // para onde a camera esta olhando
 double rotCamX = 0,  rotCamY = 0, rotCamZ = 0;
 
-
+GLuint texnum[MAXTEXTURES]; // [0]-> Walls, [1] -> Water
 
 
 
@@ -84,9 +85,9 @@ void drawMaze( double w, double h);
 void iluminacao(){
 
 	// primeira luz
-	GLfloat luzDifusa1[] = { 0.8,0.8,0.8, 1.0 };	// "cor"
+	GLfloat luzDifusa1[] = { 0.8f,0.8f,0.8f, 1.0 };	// "cor"
 	GLfloat luzEspecular1[] = {1,1,1, 1.0 };// "brilho"
-	GLfloat light_position1[] = {hMaze*5 , wMaze*5, ALTURA_PAREDE, 1.0f };
+	GLfloat light_position1[] = {hMaze*5 , wMaze*5, ALTURA_PAREDE*2, 1.0f };
 	GLfloat lightSpotDirection1[] = {0, -1, 0};
 
 
@@ -97,15 +98,15 @@ void iluminacao(){
 	glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, lightSpotDirection1);
 
 	// segunda luz
-	GLfloat luzDifusa2[] = { 1.0f,1.0f,1.0f, 1.0 };	// "cor"
+	GLfloat luzDifusa2[] = { 0.8f,0.5f,0.5f, 1.0 };	// "cor"
 	GLfloat luzEspecular2[] = {1,1,1, 1.0 };// "brilho"
-	GLfloat light_position2[] = {0.0f, 0.0f, 0.0f, 1.0f };
+	GLfloat light_position2[] = {10.0f, 60.0f, ALTURA_PAREDE*2, 1.0f };
 	GLfloat lightSpotDirection2[] = {0, -1, 0};
 
-    glLightfv(GL_LIGHT2, GL_DIFFUSE, luzDifusa2);
+  glLightfv(GL_LIGHT2, GL_DIFFUSE, luzDifusa2);
 	glLightfv(GL_LIGHT2, GL_SPECULAR, luzEspecular2);
 	glLightfv(GL_LIGHT2, GL_POSITION, light_position2);
-	glLightf(GL_LIGHT2, GL_SPOT_CUTOFF, 100.0);
+	glLightf(GL_LIGHT2, GL_SPOT_CUTOFF, 30.0);
 	glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, lightSpotDirection2);
 
 }
@@ -166,6 +167,146 @@ void quadrado(){
 
 	glPopMatrix();
 }
+
+
+void drawBox(GLfloat size, GLenum type){
+  static GLfloat n[6][3] =
+  {
+    {-1.0, 0.0, 0.0},
+    {0.0, 1.0, 0.0},
+    {1.0, 0.0, 0.0},
+    {0.0, -1.0, 0.0},
+    {0.0, 0.0, 1.0},
+    {0.0, 0.0, -1.0}
+  };
+  static GLint faces[6][4] =
+  {
+    {0, 1, 2, 3},
+    {3, 2, 6, 7},
+    {7, 6, 5, 4},
+    {4, 5, 1, 0},
+    {5, 6, 2, 1},
+    {7, 4, 0, 3}
+  };
+  GLfloat v[8][3];
+  GLint i;
+
+  v[0][0] = v[1][0] = v[2][0] = v[3][0] = -size / 2;
+  v[4][0] = v[5][0] = v[6][0] = v[7][0] = size / 2;
+  v[0][1] = v[1][1] = v[4][1] = v[5][1] = -size / 2;
+  v[2][1] = v[3][1] = v[6][1] = v[7][1] = size / 2;
+  v[0][2] = v[3][2] = v[4][2] = v[7][2] = -size / 2;
+  v[1][2] = v[2][2] = v[5][2] = v[6][2] = size / 2;
+
+  glColor3f(0.4, 0.4, 0.4);
+  glEnable(GL_TEXTURE_2D);
+  glBindTexture(GL_TEXTURE_2D, paredeid);
+  for (i = 5; i >= 0; i--) {
+    glBegin(type);
+        glNormal3fv(&n[i][0]);
+        glTexCoord2f(1, 0);
+        glVertex3fv(&v[faces[i][0]][0]);
+        glTexCoord2f(1, 1);
+        glVertex3fv(&v[faces[i][1]][0]);
+        glTexCoord2f(0, 1);
+        glVertex3fv(&v[faces[i][2]][0]);
+        glTexCoord2f(0,0);
+        glVertex3fv(&v[faces[i][3]][0]);
+    glEnd();
+  }
+  glDisable(GL_TEXTURE_2D);
+}
+
+void drawWall(float size) {
+    size = size / 2;
+
+
+    glColor3f(1,1,1);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, paredeid);
+
+    glBegin(GL_QUADS);
+        // TRASEIRA
+        glTexCoord2f(1, 0);
+        glVertex3f(size, -size, size);
+        glTexCoord2f(1, 1);
+        glVertex3f(size,  size, size);
+        glTexCoord2f(0, 1);
+        glVertex3f(-size,  size, size);
+        glTexCoord2f(0, 0);
+        glVertex3f(-size, -size, size);
+
+        // FRENTE
+        glTexCoord2f(1, 0);
+        glVertex3f(size, -size, -size);
+        glTexCoord2f(1, 1);
+        glVertex3f(size, size, -size);
+        glTexCoord2f(0, 1);
+        glVertex3f(-size, size, -size);
+        glTexCoord2f(0, 0);
+        glVertex3f(-size, -size, -size);
+
+        // DIREITA
+        glTexCoord2f(1, 0);
+        glVertex3f(size, -size, -size);
+        glTexCoord2f(1, 1);
+        glVertex3f(size, size, -size);
+        glTexCoord2f(0, 1);
+        glVertex3f(size, size, size);
+        glTexCoord2f(0, 0);
+        glVertex3f(size, -size, size);
+
+        // ESQUERDA
+        glTexCoord2f(1, 0);
+        glVertex3f(-size, -size, size);
+        glTexCoord2f(1, 1);
+        glVertex3f(-size, size, size);
+        glTexCoord2f(0, 1);
+        glVertex3f(-size, size, -size);
+        glTexCoord2f(0, 0);
+        glVertex3f(-size, -size, -size);
+
+        // TOPO
+        glTexCoord2f(1, 0);
+        glVertex3f(size, size, size);
+        glTexCoord2f(1, 1);
+        glVertex3f(size, size, -size);
+        glTexCoord2f(0, 1);
+        glVertex3f(-size, size, -size);
+        glTexCoord2f(0, 0);
+        glVertex3f(-size, size, size);
+
+        // BASE
+        glTexCoord2f(1, 0);
+        glVertex3f(size, -size, -size);
+        glTexCoord2f(1, 1);
+        glVertex3f(size, -size, size);
+        glTexCoord2f(0, 1);
+        glVertex3f(-size, -size, size);
+        glTexCoord2f(0, 0);
+        glVertex3f(-size, -size, -size);
+    glEnd();
+    glDisable(GL_TEXTURE_2D);
+    glEnable(GL_AUTO_NORMAL);
+}
+
+void drawCube(float size) {
+    glColor3f(0.48, 0.80, 0.12);
+    glutSolidCube(size);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 void cubo(){
     glPushMatrix();
@@ -228,48 +369,37 @@ void cubo(){
 	glPopMatrix();
 }
 
-void drawWindow() {
+void drawWindow1() {
+
 	  //desenhando molduras
     //cima
     glPushMatrix();
-		glEnable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D,windowid);
+			glEnable(GL_TEXTURE_2D);
+			glBindTexture(GL_TEXTURE_2D,windowid);
 			glTranslatef(4, 4, 5);
 			glScalef(1,5,2);
-      //glColor3f(0.0f, 0.0f, 0.0f);
       cubo();
+			glDisable(GL_TEXTURE_2D);
     glPopMatrix();
+
     //baixo
     glPushMatrix();
-		//glEnable(GL_TEXTURE_2D);
-		//glBindTexture(GL_TEXTURE_2D,windowid);
-		glTranslatef(4, 4, -3);
-        //glColor3f(0.0f, 0.0f, 0.0f);
+				glEnable(GL_TEXTURE_2D);
+				glBindTexture(GL_TEXTURE_2D,windowid);
+				glTranslatef(4, 4, -3);
         glScalef(1,5,2);
         cubo();
 				glDisable(GL_TEXTURE_2D);
     glPopMatrix();
 
-		// //centro "janela"
-    // glPushMatrix();
-		// 	glTranslatef(4, 4, 1);
-    //     glColor3f(1.0f, 0.0f, 0.0f);
-    //     glScalef(1,5,6);
-    //     glutSolidCube(1);
-    // glPopMatrix();
+		glPushMatrix();
+      glTranslatef(4, 4, 1);
+			glScalef(1,5,6);
+			glColor4f(1.0f, 0.5f, 0.3f, 0.15f);
+      cubo();
+    glPopMatrix();
 
-
-     glPushMatrix();
-        glTranslatef(4, 4, 1);
-        glPushMatrix();
-				glColor4f(0.5f, 0.8f, 0.1f, 0.15f);
-				glScalef(1,5,6);
-        cubo();
-        glPopMatrix();
-
-			glPopMatrix();
 }
-
 
 void draw(){
 	glMatrixMode(GL_MODELVIEW);
@@ -291,6 +421,9 @@ void draw(){
 			gluLookAt(camera[X],camera[Y],camera[Z], focus[X], focus[Y], focus[Z], 0,0,1);
 			break;
 		case CAM_CUBO_CONE_ESFERA:
+			gluLookAt(camera[X],camera[Y],camera[Z], focus[X], focus[Y], focus[Z], 0,0,1);
+			break;
+		case CAM_JANELA_LATERAL:
 			gluLookAt(camera[X],camera[Y],camera[Z], focus[X], focus[Y], focus[Z], 0,0,1);
 			break;
 	}
@@ -316,8 +449,16 @@ void draw(){
     glPushMatrix();
       glTranslatef(26,43,4);
       glRotatef(90,0,0,1);
-      drawWindow();
+      drawWindow1();
     glPopMatrix();
+
+
+		glPushMatrix();
+			glTranslatef(26,70,4);
+			glRotatef(90,0,0,1);
+			glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+			drawWindow1();
+		glPopMatrix();
 
 	//MOVIMENTOS DA CABEÇA
 	if(ROT_HEAD_RIGHT == true){
@@ -415,14 +556,14 @@ void specialKeys(int key, int x, int y){
 			//posicao em que esta o objeto
 			focus[X] = 22;
 			focus[Y] = 37;
-			focus[Z] = 5;
+			focus[Z] = 10;
 			break;
 
 		case GLUT_KEY_F5: //camera em cima da teapot
 			CAM_ATUAL = CAM_TEAPOT;
 			camera[X] = hMaze-5;
 			camera[Y] = wMaze-30;
-			camera[Z] = 1;
+			camera[Z] = 10;
 			//posicao em que esta o objeto
 			focus[X] = hMaze-5;
 			focus[Y] = wMaze-16;
@@ -438,6 +579,21 @@ void specialKeys(int key, int x, int y){
 			focus[Y] = 13;
 			focus[Z] = 2.5;
 			break;
+
+		case GLUT_KEY_F7: // camera que olha pela janela lateral
+			CAM_ATUAL = CAM_JANELA_LATERAL;
+			camera[X] = 22;
+			camera[Y] = 60;
+			camera[Z] = 15;
+			//posicao em que esta o objeto
+			focus[X] = 22;
+			focus[Y] = 70;
+			focus[Z] = 5;
+			break;
+
+
+
+			//40,39,4
 
 		case GLUT_KEY_UP: //anda pra frente
 			if(posRobo[Y]+2 < wMaze){
@@ -540,23 +696,24 @@ void drawMaze( double w, double h){
 	 	glVertex3fv(v_baseDesenho[3]);
 	 	glEnd();
 	 glPopMatrix();
-
+	 static GLfloat normal[] = {0.0, 1.0, 0.0};
 
 	for(int i = 0; i < h; i++){
 		for(int j = 0; j < w; j++){
 			if(labirinto[i][j] == PAREDE){ //se posicao do labirinto for uma parede
 				glPushMatrix();
-					glColor3f(1.0f, 1.0f, 1.0f);
+					glColor3f(0.1f, 0.1f, 0.1f);
 					glScalef(1,1,ALTURA_PAREDE);
 					glEnable(GL_TEXTURE_2D);
 					glBindTexture(GL_TEXTURE_2D, paredeid);
 					glTranslatef(i,j,ESCALA);
-					cubo();
+					drawBox(1, GL_QUADS);
 					glDisable(GL_TEXTURE_2D);
 				glPopMatrix();
 			}else{
 				glPushMatrix();
-				glColor3f(1.0f, 1.0f, 1.0f);
+
+				glColor3f(0.5f, 0.5f, 0.5f);
 					glScalef(1,1,0);
 					glEnable(GL_TEXTURE_2D);
 					glBindTexture(GL_TEXTURE_2D, chaoid);
@@ -625,7 +782,7 @@ void init(){
 	// configs iluminacao
 	GLfloat luzAmbiente[] = {1.0f,1.0f,1.0f,1.0f};
 	GLfloat especularidade[] = {1.0f,1.0f,1.0f,1.0f};
-	GLint especMaterial = 10;
+	GLint especMaterial = 50;
 	//Lfloat mat_shininess[] = { 50.0 };
 
 
