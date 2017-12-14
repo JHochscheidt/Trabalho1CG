@@ -100,13 +100,13 @@ void iluminacao(){
 	// segunda luz
 	GLfloat luzDifusa2[] = { 0.8f,0.5f,0.5f, 1.0 };	// "cor"
 	GLfloat luzEspecular2[] = {1,1,1, 1.0 };// "brilho"
-	GLfloat light_position2[] = {10.0f, 60.0f, ALTURA_PAREDE*2, 1.0f };
+	GLfloat light_position2[] = {10.0f, 50.0f, ALTURA_PAREDE*3, 1.0f };
 	GLfloat lightSpotDirection2[] = {0, -1, 0};
 
   glLightfv(GL_LIGHT2, GL_DIFFUSE, luzDifusa2);
 	glLightfv(GL_LIGHT2, GL_SPECULAR, luzEspecular2);
 	glLightfv(GL_LIGHT2, GL_POSITION, light_position2);
-	glLightf(GL_LIGHT2, GL_SPOT_CUTOFF, 30.0);
+	glLightf(GL_LIGHT2, GL_SPOT_CUTOFF, 100.0);
 	glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, lightSpotDirection2);
 
 }
