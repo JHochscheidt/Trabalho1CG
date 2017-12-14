@@ -12,7 +12,7 @@
 #include "Table.h"
 #include "Robot.h"
 #include "Textura.h"
-
+#include "Nurbs.h"
 
 
 #define PAREDE 0
@@ -27,6 +27,7 @@
 #define CAM_TEAPOT 5
 #define CAM_CUBO_CONE_ESFERA 6
 #define CAM_JANELA_LATERAL 7
+#define CAM_FORA_NURB 8
 #define FRENTE 1
 #define TRAS 2
 #define ESQUERDA 3
@@ -68,9 +69,15 @@ int posRobo[3] = {22,0,0};
 double camera[3] = {hMaze/2,wMaze/2,100};
 double focus[3] = {hMaze/2,wMaze/2,0}; // para onde a camera esta olhando
 double rotCamX = 0,  rotCamY = 0, rotCamZ = 0;
-
 GLuint texnum[MAXTEXTURES]; // [0]-> Walls, [1] -> Water
 
+//Usadas na rotação da câmera
+GLfloat angle = 45, fAspect;
+GLdouble rot = 1;
+GLdouble alpha = 0.0;
+
+GLfloat cX = 0, cY = 10, cZ = 40, ang = 3*M_PI/180, zPos = 0;
+GLfloat speed = 0.2, s = 0.2;
 
 
 GLUquadricObj *novaQuadrica();
@@ -80,21 +87,181 @@ void animate(int value);
 void teclado(unsigned char key, int x, int y);
 void specialKeys(int key, int x, int y);
 void drawMaze( double w, double h);
+void iluminacao();
+void drawBed();
 
+void drawBed(){
+	//	Aqui é desenhada a mesa (Todas as peças, "tabuas")
+	glPushMatrix();
+		glPushMatrix();
+			glColor3f(0.55, 0.27, 0.1);
+			glTranslatef(20 - 4, -22 + pos, 15);
+			glRotatef(90, 0, 1, 0);
+			glScalef(60.0, 1.2, 0.2);
+			paralelepipedo();
+		glPopMatrix();
+
+		glPushMatrix();
+			glColor3f(0.55, 0.27, 0.1);
+			glTranslatef(10, -22 + pos, 15);
+			glRotatef(90, 0, 1, 0);
+			glScalef(60.0, 1.2, 0.2);
+			paralelepipedo();
+		glPopMatrix();
+
+		glPushMatrix();
+			glColor3f(0.55, 0.27, 0.1);
+			glTranslatef(5, -22+ pos, 15);
+			glRotatef(90, 0, 1, 0);
+			glScalef(60.0, 1.2, 0.2);
+			paralelepipedo();
+		glPopMatrix();
+
+		glPushMatrix();
+			glColor3f(0.55, 0.27, 0.1);
+			glTranslatef(0, -22+ pos, 15);
+			glRotatef(90, 0, 1, 0);
+			glScalef(60.0, 1.2, 0.2);
+			paralelepipedo();
+		glPopMatrix();
+
+		glPushMatrix();
+			glColor3f(0.55, 0.27, 0.1);
+			glTranslatef(-5, -22 + pos, 15);
+			glRotatef(90, 0, 1, 0);
+			glScalef(60.0, 1.2, 0.2);
+			paralelepipedo();
+		glPopMatrix();
+
+		glPushMatrix();
+			glColor3f(0.55, 0.27, 0.1);
+			glTranslatef(-10, -22 + pos, 15);
+			glRotatef(90, 0, 1, 0);
+			glScalef(60.0, 1.2, 0.2);
+			paralelepipedo();
+		glPopMatrix();
+
+		glPushMatrix();
+			glColor3f(0.55, 0.27, 0.1);
+			glTranslatef(-15, -22 + pos, 15);
+			glRotatef(90, 0, 1, 0);
+			glScalef(60.0, 1.2, 0.2);
+			paralelepipedo();
+		glPopMatrix();
+
+		glPushMatrix();
+			glColor3f(0.55, 0.27, 0.1);
+			glTranslatef(-20, -22 + pos, 15);
+			glRotatef(90, 0, 1, 0);
+			glScalef(60.0, 1.2, 0.2);
+			paralelepipedo();
+		glPopMatrix();
+
+		glPushMatrix();
+			glColor3f(0.55, 0.27, 0.1);
+			glTranslatef(-25, -22 + pos, 15);
+			glRotatef(90, 0, 1, 0);
+			glScalef(60.0, 1.2, 0.2);
+			paralelepipedo();
+		glPopMatrix();
+
+		glPushMatrix();
+			glColor3f(0.55, 0.27, 0.1);
+			glTranslatef(-30, -22 + pos, 15);
+			glRotatef(90, 0, 1, 0);
+			glScalef(60.0, 1.2, 0.2);
+			paralelepipedo();
+		glPopMatrix();
+
+		glPushMatrix();
+			glColor3f(0.55, 0.27, 0.1);
+			glTranslatef(-35, -22 + pos, 15);
+			glRotatef(90, 0, 1, 0);
+			glScalef(60.0, 1.2, 0.2);
+			paralelepipedo();
+		glPopMatrix();
+
+		glPushMatrix();
+			glColor3f(0.55, 0.27, 0.1);
+			glTranslatef(-40, -22 + pos, 15);
+			glRotatef(90, 0, 1, 0);
+			glScalef(60.0, 1.2, 0.2);
+			paralelepipedo();
+		glPopMatrix();
+		//A partir daqui pra baixo termina as tábuas de baixo
+		glPushMatrix();
+		//Ripas da lado cama
+			glColor3f(0.55, 0.27, 0.1);
+			glTranslatef(-40, -22 , 15 - 3);
+			glScalef(120.0, 4, 0.2);
+			paralelepipedo();
+		glPopMatrix();
+
+		//Ripas do lado da cama
+		glPushMatrix();
+			glColor3f(0.55, 0.27, 0.1);
+			glTranslatef(-40, -22, -15);
+			glScalef(120.0, 4, 0.2);
+			paralelepipedo();
+		glPopMatrix();
+		//Colchao
+		glPushMatrix();
+			glColor3f(1.0f, 1.0f, 1.0f);
+			glTranslatef(-40, -17.5, -15);
+			glScalef(120.0, 6, 2);
+			paralelepipedo();
+		glPopMatrix();
+		glPushMatrix();
+			glColor3f(1.0f, 1.0f, 1.0f);
+			glTranslatef(-40, -17.5, -15);
+			glScalef(120.0, 6, 2);
+			paralelepipedo();
+		glPopMatrix();
+		//Pés da cama
+		glPushMatrix();
+			glColor3f(0.1f,0.1f,0.1f);
+			glTranslatef(-40, -15, 15 - pos);
+			glRotatef(90, 1, 0, 0);
+			paralelepipedo();
+		glPopMatrix();
+
+		glPushMatrix();
+		glColor3f(0.1f,0.1f,0.1f);
+			glTranslatef(20 - pos, -15, 15 - pos);
+			glRotatef(90, 1, 0, 0);
+			paralelepipedo();
+		glPopMatrix();
+
+		glPushMatrix();
+		glColor3f(0.1f,0.1f,0.1f);
+			glTranslatef(20 - pos, -15, -15);
+			glRotatef(90, 1, 0, 0);
+			paralelepipedo();
+		glPopMatrix();
+
+		glPushMatrix();
+		glColor3f(0.1f,0.1f,0.1f);
+			glTranslatef(-40, -15, -15);
+			glRotatef(90, 1, 0, 0);
+			paralelepipedo();
+		glPopMatrix();
+
+	glPopMatrix();
+}
 
 void iluminacao(){
 
 	// primeira luz
 	GLfloat luzDifusa1[] = { 0.8f,0.8f,0.8f, 1.0 };	// "cor"
 	GLfloat luzEspecular1[] = {1,1,1, 1.0 };// "brilho"
-	GLfloat light_position1[] = {hMaze*5 , wMaze*5, ALTURA_PAREDE*2, 1.0f };
+	GLfloat light_position1[] = {hMaze , wMaze*2, ALTURA_PAREDE*2, 1.0f };
 	GLfloat lightSpotDirection1[] = {0, -1, 0};
 
 
 	glLightfv(GL_LIGHT1, GL_DIFFUSE, luzDifusa1);
 	glLightfv(GL_LIGHT1, GL_SPECULAR, luzEspecular1);
 	glLightfv(GL_LIGHT1, GL_POSITION, light_position1);
-	glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 30.0);
+	glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 100.0);
 	glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, lightSpotDirection1);
 
 	// segunda luz
@@ -110,10 +277,6 @@ void iluminacao(){
 	glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, lightSpotDirection2);
 
 }
-
-
-
-
 
 void reshapeWindow(GLsizei w, GLsizei h){
 	if(h ==0) h = 1;
@@ -144,10 +307,10 @@ GLfloat v_quadrado[4][3] = {
 };
 
 GLfloat v_baseDesenho[4][3] = {
-	{-10,-10},
-	{hMaze + 10, -10},
-	{hMaze + 10, wMaze + 10},
-	{-10,wMaze + 10}
+	{-50,-50},
+	{hMaze + 50, -50},
+	{hMaze + 50, wMaze + 50},
+	{-50,wMaze + 50}
 };
 
 void quadrado(){
@@ -295,19 +458,6 @@ void drawCube(float size) {
     glutSolidCube(size);
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 void cubo(){
     glPushMatrix();
 		glBegin(GL_QUADS);
@@ -377,7 +527,7 @@ void drawWindow1() {
 			glEnable(GL_TEXTURE_2D);
 			glBindTexture(GL_TEXTURE_2D,windowid);
 			glTranslatef(4, 4, 5);
-			glScalef(1,5,2);
+			glScalef(1,5,1.9);
       cubo();
 			glDisable(GL_TEXTURE_2D);
     glPopMatrix();
@@ -387,7 +537,7 @@ void drawWindow1() {
 				glEnable(GL_TEXTURE_2D);
 				glBindTexture(GL_TEXTURE_2D,windowid);
 				glTranslatef(4, 4, -3);
-        glScalef(1,5,2);
+        glScalef(1,5,1.9);
         cubo();
 				glDisable(GL_TEXTURE_2D);
     glPopMatrix();
@@ -426,6 +576,9 @@ void draw(){
 		case CAM_JANELA_LATERAL:
 			gluLookAt(camera[X],camera[Y],camera[Z], focus[X], focus[Y], focus[Z], 0,0,1);
 			break;
+			case CAM_FORA_NURB:
+				gluLookAt(camera[X]+cX,camera[Y]+cY,camera[Z]+cZ, focus[X], focus[Y], focus[Z], 0,0,1);
+			break;
 	}
 
 
@@ -445,6 +598,16 @@ void draw(){
 	drawRobot(posRobo, angleRotateRobot, rotateArms, rotateHead, leg, arm, neck);
 
 
+	glPushMatrix();
+		glTranslatef(22,80,6);
+		glRotatef(90,1,0,0);
+		glRotatef(45,0,1,0);
+
+		glScalef(0.12,0.2,0.12);
+		drawBed();
+	glPopMatrix();
+
+
 	//Draw windowed wall after objects otherwise they don't show up beside the glass
     glPushMatrix();
       glTranslatef(26,43,4);
@@ -459,6 +622,9 @@ void draw(){
 			glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 			drawWindow1();
 		glPopMatrix();
+
+
+
 
 	//MOVIMENTOS DA CABEÇA
 	if(ROT_HEAD_RIGHT == true){
@@ -488,6 +654,17 @@ void draw(){
 
 }
 
+//Função para fazer a rotação do ponto da câmera na esfera
+void rotateCamera(GLfloat *x, GLfloat *y){
+	GLfloat nx, ny;
+
+	nx = *x * cos(ang) - *y * sin(ang);
+	ny = *x * sin(ang) + *y * cos(ang);
+
+	*x = nx;
+	*y = ny;
+}
+
 void animate(int value){
 	glutPostRedisplay();
 	draw();
@@ -496,12 +673,40 @@ void animate(int value){
 
 void teclado(unsigned char key, int x, int y){
 	switch(key){
+		case 'E':
+			exit(0);
+			break;
+		//	Rotaciona a câmera
+		case 'a':
+			rotateCamera(&cX, &cZ);
+			break;
+
+		//	Rotaciona a câmera
+		case 'd':
+			rotateCamera(&cZ, &cX);
+			break;
+
+		//	Rotaciona a câmera
+		case 'w':
+			rotateCamera(&cY, &cX);
+			break;
+
+		//	Rotaciona a câmera
+		case 's':
+			rotateCamera(&cX, &cY);
+			break;
+
+		//	"zoom"
+		case 'e':
+           cZ -= 0.3;
+           break;
+
+		//	"zoom"
 		case 'q':
-			exit(0);
-			break;
-		case 'Q':
-			exit(0);
-			break;
+           cZ += 0.3;
+           break;
+
+
 		case '-': //zoom in
 			if(CAM_ATUAL == CAM_PADRAO){
 				if(camera[Y] > -30){
@@ -584,12 +789,26 @@ void specialKeys(int key, int x, int y){
 			CAM_ATUAL = CAM_JANELA_LATERAL;
 			camera[X] = 22;
 			camera[Y] = 60;
-			camera[Z] = 15;
+			camera[Z] = 6;
 			//posicao em que esta o objeto
 			focus[X] = 22;
 			focus[Y] = 70;
 			focus[Z] = 5;
 			break;
+
+		case GLUT_KEY_F8: // camera fora do labirinto que mostra nurb
+		CAM_ATUAL = CAM_FORA_NURB;
+		cX = 0;
+		cY = 10;
+		cZ = 40;
+		camera[X] = 20;
+		camera[Y] = 100;
+		camera[Z] = 10;
+		//posicao em que esta o objeto
+		focus[X] = 20;
+		focus[Y] = 80;
+		focus[Z] = 2;
+		break;
 
 
 
